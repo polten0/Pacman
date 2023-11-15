@@ -18,6 +18,12 @@ class AppManager:
 
         pyray.end_drawing()
 
+class MapManager:
+    def __init__(self):
+        pass
+    def Draw(self):
+        pass
+
 class GameManager:
     def __init__(self):
         self.listGameObjects = list()
@@ -29,3 +35,13 @@ class GameManager:
     def Draw(self):
         for gameObject in self.listGameObjects:
             gameObject.draw()
+
+class GUIManager:
+    def __init__(self):
+        pass
+
+    def Update(self):
+        pass
+
+    def Draw(self):
+        pass
