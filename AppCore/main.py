@@ -1,5 +1,6 @@
 import pyray
-import Managers
+from AppCore import Managers
+
 
 def main():
     pyray.set_target_fps(60)

@@ -1,6 +1,7 @@
-import Interfaces
+from AppCore.Interfaces import Interfaces
 import vec
-import pyray
+
+
 class GameObject(Interfaces.IUpdateableObject,
                  Interfaces.IDrawableObject):
     def __init__(self):
