@@ -1,3 +1,5 @@
+import pyray
+
 from AppCore.Interfaces import Interfaces
 import vec
 
@@ -11,7 +13,7 @@ class Object:
 
     @X.setter
     def X(self, new):
-        self.vectorPosition.x = new
+        self.vectorPosition = vec.Vector2(new, self.vectorPosition.y)
 
     @property
     def Y(self):
@@ -19,7 +21,7 @@ class Object:
 
     @Y.setter
     def Y(self, new):
-        self.vectorPosition.y = new
+        self.vectorPosition = vec.Vector2(self.vectorPosition.x, new)
 
 class GameObject(Object, Interfaces.IUpdateableObject,
                  Interfaces.IDrawableObject):

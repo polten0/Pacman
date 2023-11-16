@@ -1,5 +1,5 @@
 import pyray
-
+from ObjectClasses.Objects import GameObject, MapObject, UIObject
 
 class AppManager:
     screenWidth = 500
@@ -11,10 +11,13 @@ class AppManager:
         pyray.init_window(AppManager.screenWidth, AppManager.screenHeight, 'Game')
 
     def Update(self):
-        pyray.clear_background(pyray.BLACK)
+        self.gameManager.Update()
 
     def Draw(self):
+        pyray.clear_background(pyray.BLACK)
         pyray.begin_drawing()
+
+        self.gameManager.Draw()
 
         pyray.end_drawing()
 
@@ -26,7 +29,7 @@ class MapManager:
 
 class GameManager:
     def __init__(self):
-        self.listGameObjects = list()
+        self.listGameObjects = list([GameObject()])
 
     def Update(self):
         for gameObject in self.listGameObjects:
