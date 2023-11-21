@@ -1,16 +1,19 @@
 import pyray
 from ObjectClasses.Objects import GameObject, MapObject, UIObject
+from ObjectClasses.MapObjects import Wall
+from AppCore import Interfaces
 
 class AppManager:
-    instanse = None
+    instance = None
     screenWidth = 500
     screenHeight = 700
     def __init__(self):
         self.gameManager = GameManager()
-        AppManager.instanse = self
+        AppManager.instance = self
 
     def Initialization(self):
         pyray.init_window(AppManager.screenWidth, AppManager.screenHeight, 'Game')
+        self.gameManager.LoadContent()
 
     def Update(self):
         self.gameManager.Update()
@@ -25,15 +28,24 @@ class AppManager:
 
 class MapManager:
     def __init__(self):
-        pass
+        self.listMapObjects = list([Wall()])
+
+    def loadContent(self):
+        for mapObject in self.listMapObjects:
+            if isinstance(mapObject, Interfaces.ITextureableObject):
+                mapObject.loadContent()
 
     def Draw(self):
-        pass
+        for mapObject in self.listMapObjects:
+            mapObject.draw()
 
 class GameManager:
     def __init__(self):
-        self.listGameObjects = list([GameObject()])
+        self.mapManager = MapManager()
+        self.listGameObjects = list([])
 
+    def LoadContent(self):
+        self.mapManager.loadContent()
 
     def Update(self):
         for gameObject in self.listGameObjects:
@@ -42,6 +54,7 @@ class GameManager:
     def Draw(self):
         for gameObject in self.listGameObjects:
             gameObject.draw()
+        self.mapManager.Draw()
 
     def CheckCollision(self):
         for gameObject in self.listGameObjects:

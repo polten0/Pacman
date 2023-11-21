@@ -1,6 +1,6 @@
 import pyray
 
-from AppCore.Interfaces import Interfaces
+from AppCore import Interfaces
 import vec
 
 class Object:
@@ -40,12 +40,13 @@ class GameObject(Object, Interfaces.IUpdateableObject,
 class MapObject(Object, Interfaces.IDrawableObject):
     def __init__(self):
         super().__init__()
+        self.size = 16
 
     def draw(self):
         pass
 
 class UIObject(Object, Interfaces.IUpdateableObject,
-                 Interfaces.IDrawableObject):
+               Interfaces.IDrawableObject):
     def __init__(self):
         super().__init__()
 
