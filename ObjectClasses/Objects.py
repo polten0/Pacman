@@ -37,6 +37,9 @@ class GameObject(Object, Interfaces.IUpdateableObject,
     def onCollison(self):
         pass
 
+    def rec(self):
+        pass
+
 class MapObject(Object, Interfaces.IDrawableObject):
     def __init__(self):
         super().__init__()

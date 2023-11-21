@@ -1,30 +1,21 @@
 from AppCore.Managers import GameManager
-
-class GameObject:
-    # typeObject может быть: 'wall', 'player', 'food', 'big_food', 'ghost'. typeObject задавайте каждому классу по умолчанию в конструкторе
-    def __init__(self, typeObject='none'):
-        self.typeObject = typeObject
-
-    # хитбокс
-    def rec(self):
-        pass
-
+from Objects import GameObject
 
 class Player(GameObject):
     def __init__(self, typeObject='player'):
         self.typeObject = typeObject
     def onCollision(self, collide_object):
-        if (collide_object.typeObject == 'food'):
+        if (isinstance(collide_object, Food)):
             collide_object.onCollision(self)
-        elif (collide_object.typeObject == 'ghost'):
+        elif (isinstance(collide_object, Ghost)):
             if (GameManager.player_is_boosted == False):
                 self.Death()
             if (GameManager.player_is_boosted):
                 collide_object.onCollision(self)
-        elif (collide_object.typeObject == 'big_food'):
+        elif (isinstance(collide_object, BigFood)):
             collide_object.onCollision()
             GameManager.boost_player()
-        elif (collide_object.typeObject == 'wall'):
+        elif (isinstance(collide_object, Wall)):
             pass
 
     def Death(self):
@@ -39,7 +30,7 @@ class Ghost(GameObject):
         self.Timeout = False
 
     def onCollision(self, collide_object):
-        if (collide_object.typeObject == 'player'):
+        if (isinstance(collide_object, Player)):
             if (self.Frightened):
                 self.Death()
             else:
