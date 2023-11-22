@@ -37,13 +37,19 @@ class GameObject(Object, Interfaces.IUpdateableObject,
     def onCollison(self):
         pass
 
-class MapObject(Object, Interfaces.IDrawableObject):
+class MapObject(Object, Interfaces.IDrawableObject, Interfaces.ITextureableObject):
     def __init__(self):
         super().__init__()
         self.size = 16
+        self.filepath = ""
+
+        self.texture = None
+
+    def loadContent(self):
+        self.texture = pyray.load_texture(self.filepath)
 
     def draw(self):
-        pass
+        pyray.draw_texture(self.texture, self.X, self.Y, pyray.WHITE)
 
 class UIObject(Object, Interfaces.IUpdateableObject,
                Interfaces.IDrawableObject):

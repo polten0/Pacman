@@ -2,6 +2,9 @@ import pyray
 from ObjectClasses.Objects import GameObject, MapObject, UIObject
 from ObjectClasses.MapObjects import Wall
 from AppCore import Interfaces
+import json
+import os
+
 
 class AppManager:
     instance = None
@@ -28,7 +31,9 @@ class AppManager:
 
 class MapManager:
     def __init__(self):
-        self.listMapObjects = list([Wall()])
+        self.listMapObjects = list([])
+
+        self.loadMap()
 
     def loadContent(self):
         for mapObject in self.listMapObjects:
@@ -38,6 +43,20 @@ class MapManager:
     def Draw(self):
         for mapObject in self.listMapObjects:
             mapObject.draw()
+
+    def loadMap(self):
+        map = open(f"{os.getcwd()}/Content/Maps/Map1.json").read()
+        mapdict = json.loads(map)
+
+        tilesets = mapdict["tilesets"]
+
+        for tileset in tilesets:
+            mapObject = MapObject()
+
+            mapObject.filepath = tileset["source"]
+            mapObject.size = tileset["tilewidth"]
+
+            self.listMapObjects.add(mapObject)
 
 class GameManager:
     def __init__(self):
@@ -59,8 +78,6 @@ class GameManager:
     def CheckCollision(self):
         for gameObject in self.listGameObjects:
             gameObject.update()
-
-
 class GUIManager:
     def __init__(self):
         pass
