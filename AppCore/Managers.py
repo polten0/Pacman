@@ -1,15 +1,16 @@
 import pyray
+import vec
+
 from ObjectClasses.Objects import GameObject, MapObject, UIObject
-from ObjectClasses.MapObjects import Wall
-from AppCore import Interfaces
+from ObjectClasses.MapObjects import Wall, Floor
 import json
 import os
 
 
 class AppManager:
     instance = None
-    screenWidth = 500
-    screenHeight = 700
+    screenWidth = 700
+    screenHeight = 900
     def __init__(self):
         self.gameManager = GameManager()
         AppManager.instance = self
@@ -31,32 +32,69 @@ class AppManager:
 
 class MapManager:
     def __init__(self):
-        self.listMapObjects = list([])
-
-        self.loadMap()
+        self.listMapObjects = list()
+        self.matrix = None
 
     def loadContent(self):
+        self.loadMap()
         for mapObject in self.listMapObjects:
-            if isinstance(mapObject, Interfaces.ITextureableObject):
-                mapObject.loadContent()
+            mapObject.loadContent()
 
     def Draw(self):
         for mapObject in self.listMapObjects:
             mapObject.draw()
 
     def loadMap(self):
-        map = open(f"{os.getcwd()}/Content/Maps/Map1.json").read()
+        fullpath = f"{os.getcwd()}/Content/Maps/"
+
+        map = open(fullpath + "Map1.json").read()
         mapdict = json.loads(map)
 
-        tilesets = mapdict["tilesets"]
+        layer = mapdict["layers"][0]
 
-        for tileset in tilesets:
-            mapObject = MapObject()
+        tilesetpath = mapdict["tilesets"][0]["source"]
+        tileset = json.loads(open(fullpath + tilesetpath).read())
 
-            mapObject.filepath = tileset["source"]
-            mapObject.size = tileset["tilewidth"]
+        tileHeight = tileset["tileheight"]
+        tileWidth = tileset["tilewidth"]
+        spacing = tileset["spacing"]
+        columns = tileset["columns"]
 
-            self.listMapObjects.add(mapObject)
+
+        tiles = tileset["tiles"]
+        data = layer["data"]
+        dataSizeRows = layer["height"]
+        dataSizeColumns = layer["width"]
+
+        self.matrix = [[0 for j in range(dataSizeColumns)] for i in range(dataSizeRows)]
+
+        c = 0
+        for i in range(dataSizeRows):
+            for e in range(dataSizeColumns):
+                mapObject = None
+                GID = data[c] - 1
+
+                for tile in tiles:
+                    if tile["id"] == GID:
+                        if tile["type"] == "Wall":
+                            mapObject = Wall()
+                        elif tile["type"] == "Floor":
+                            mapObject = Floor()
+
+                mapObject.width = tileWidth
+                mapObject.height = tileHeight
+
+                mapObject.imageX = tileWidth * (GID % columns) + spacing * (GID % columns)
+                mapObject.imageY = tileHeight * (GID // columns) + spacing * (GID // columns)
+
+                mapObject.X = e * tileWidth * mapObject.scale
+                mapObject.Y = i * tileHeight * mapObject.scale
+
+                self.matrix[i][e] = mapObject
+                self.listMapObjects.append(mapObject)
+
+                c += 1
+
 
 class GameManager:
     def __init__(self):

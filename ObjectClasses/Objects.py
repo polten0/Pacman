@@ -40,16 +40,33 @@ class GameObject(Object, Interfaces.IUpdateableObject,
 class MapObject(Object, Interfaces.IDrawableObject, Interfaces.ITextureableObject):
     def __init__(self):
         super().__init__()
-        self.size = 16
+        self.width = 8
+        self.height = 8
         self.filepath = ""
+        self.scale = 3.0
+
+        self.imageX = 0
+        self.imageY = 0
+
+        self.X = 0
+        self.Y = 0
+
+        self.collisionRectangle = None
+        self.sourceRectangle = None
 
         self.texture = None
+        self.isCollide = None
 
     def loadContent(self):
         self.texture = pyray.load_texture(self.filepath)
 
+        self.sourceRectangle = pyray.Rectangle(self.imageX, self.imageY, self.width, self.height)
+        self.collisionRectangle = pyray.Rectangle(self.X, self.Y, self.width * self.scale, self.height * self.scale)
+
     def draw(self):
-        pyray.draw_texture(self.texture, self.X, self.Y, pyray.WHITE)
+        pyray.draw_texture_pro(self.texture, self.sourceRectangle, self.collisionRectangle,
+                               pyray.Vector2(0, 0), 0, pyray.WHITE)
+        pyray.draw_rectangle_lines_ex(self.collisionRectangle, 1, pyray.GREEN)
 
 class UIObject(Object, Interfaces.IUpdateableObject,
                Interfaces.IDrawableObject):
