@@ -71,6 +71,8 @@ class MapObject(Object, Interfaces.IDrawableObject, Interfaces.ITextureableObjec
                                pyray.Vector2(0, 0), 0, pyray.WHITE)
         pyray.draw_rectangle_lines_ex(self.collisionRectangle, 1, pyray.GREEN)
 
+
+
 class UIObject(Object, Interfaces.IUpdateableObject,
                Interfaces.IDrawableObject):
     def __init__(self):

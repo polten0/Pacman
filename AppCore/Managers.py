@@ -1,6 +1,7 @@
 import pyray
 import vec
 
+from ObjectClasses.GameObjects import Player, Food, BigFood, Ghost
 from ObjectClasses.Objects import GameObject, MapObject, UIObject
 from ObjectClasses.MapObjects import Wall, Floor
 import json
@@ -45,7 +46,7 @@ class MapManager:
             mapObject.draw()
 
     def loadMap(self):
-        fullpath = f"{os.getcwd()}/Content/Maps/"
+        fullpath = f"/home/prom/Рабочий стол/pacman/titanic_pacman/Content/Maps/"
 
         map = open(fullpath + "Map1.json").read()
         mapdict = json.loads(map)
@@ -125,10 +126,10 @@ class GameManager:
         player_is_boosted = True
         pass
 
-    def addScore(self, typeObject):
-        if (typeObject == 'food'):
+    def addScore(self, scoreObject):
+        if (isinstance(scoreObject, Food)):
             self.score += 10
-        if (typeObject == 'big_food'):
+        if (isinstance(scoreObject, BigFood)):
             self.score += 50
 
 class GUIManager:
