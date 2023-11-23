@@ -12,6 +12,11 @@ class AppManager:
     instance = None
     screenWidth = 700
     screenHeight = 900
+
+    @property
+    def GameManager(self):
+        return self.gameManager
+
     def __init__(self):
         self.gameManager = GameManager()
         AppManager.instance = self
@@ -46,7 +51,7 @@ class MapManager:
             mapObject.draw()
 
     def loadMap(self):
-        fullpath = f"/home/prom/Рабочий стол/pacman/titanic_pacman/Content/Maps/"
+        fullpath = f"{os.getcwd()}/Content/Maps/"
 
         map = open(fullpath + "Map1.json").read()
         mapdict = json.loads(map)
@@ -60,7 +65,7 @@ class MapManager:
         tileWidth = tileset["tilewidth"]
         spacing = tileset["spacing"]
         columns = tileset["columns"]
-
+        imagePath = tileset["image"]
 
         tiles = tileset["tiles"]
         data = layer["data"]
@@ -90,6 +95,8 @@ class MapManager:
 
                 mapObject.X = e * tileWidth * mapObject.scale
                 mapObject.Y = i * tileHeight * mapObject.scale
+
+                mapObject.filepath = fullpath + imagePath
 
                 self.matrix[i][e] = mapObject
                 self.listMapObjects.append(mapObject)
@@ -128,7 +135,6 @@ class GameManager:
 
     def boost_player(self):
         player_is_boosted = True
-        pass
 
     def addScore(self, scoreObject):
         if (isinstance(scoreObject, Food)):
