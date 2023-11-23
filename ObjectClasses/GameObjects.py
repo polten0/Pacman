@@ -68,14 +68,6 @@ class Player(GameObject):
     def turn(self):
         pass
 
-
-
-    # вот тут пропишите, функции должны возвращать позиции в массиве по X и по Y
-    def getPositionX(self):
-        pass
-    def getPositionY(self):
-        pass
-
 class Ghost(GameObject):
     def __init__(self):
         self.Frightened = False
