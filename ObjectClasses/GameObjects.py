@@ -1,3 +1,5 @@
+import pyray
+
 import AppCore.Managers
 from ObjectClasses.Objects import GameObject
 from ObjectClasses.MapObjects import Wall
@@ -36,16 +38,27 @@ class Player(GameObject):
     def Death(self):
         pass
 
-    def move(self):
+    def move(self, GameManager().return_time()):
         if (isinstance(self.direction, Turn.NONE) == False):
+            f = 0
             if (isinstance(self.direction, Turn.RIGHT)):
-                self.vectorPosition.x += self.speed
+                f += 1
+                if f <= 30:
+                    self.vectorPosition.x += self.speed
             elif (isinstance(self.direction, Turn.LEFT)):
-                self.vectorPosition.x -= self.speed
+                f += 1
+                if f <= 30:
+                    self.vectorPosition.x -= self.speed
             elif (isinstance(self.direction, Turn.UP)):
-                self.vectorPosition.y -= self.speed
+                f += 1
+                if f <= 30:
+                    self.vectorPosition.y -= self.speed
             elif (isinstance(self.direction, Turn.DOWN)):
-                self.vectorPosition.y += self.speed
+                f += 1
+                if f <= 30:
+                    self.vectorPosition.y += self.speed
+            if f == 30:
+                f = 0
 
     def checkBuffer(self):
         if (isinstance(self.buffer, Turn.NONE) == False):
@@ -70,8 +83,16 @@ class Player(GameObject):
                 else:
                     pass
 
-    def turn(self):
-        pass
+    def turn(self, new_direction):
+        if (pyray.is_key_pressed(pyray.KeyboardKey.KEY_W)):
+            pass
+        elif (pyray.is_key_pressed(pyray.KeyboardKey.KEY_A)):
+            pass
+        elif (pyray.is_key_pressed(pyray.KeyboardKey.KEY_S)):
+            pass
+        elif (pyray.is_key_pressed(pyray.KeyboardKey.KEY_D)):
+            pass
+
 
 class Ghost(GameObject):
     def __init__(self):

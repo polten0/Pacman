@@ -112,13 +112,16 @@ class GameManager:
         self.mapManager = MapManager()
         self.listGameObjects = list([])
         self.pacman_position = vec.Vector2(x=0, y=0)
+        self.t = 0
 
     def LoadContent(self):
         self.mapManager.loadContent()
 
     def Update(self):
+        self.t += 1
         for gameObject in self.listGameObjects:
             gameObject.update()
+
 
     def Draw(self):
         for gameObject in self.listGameObjects:
@@ -141,6 +144,9 @@ class GameManager:
             self.score += 10
         if (isinstance(scoreObject, BigFood)):
             self.score += 50
+
+    def return_time(self):
+        return self.t
 
 class GUIManager:
     def __init__(self):
