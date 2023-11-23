@@ -38,50 +38,43 @@ class Player(GameObject):
     def Death(self):
         pass
 
-    def move(self, GameManager().return_time()):
-        if (isinstance(self.direction, Turn.NONE) == False):
-            f = 0
-            if (isinstance(self.direction, Turn.RIGHT)):
-                f += 1
-                if f <= 30:
-                    self.vectorPosition.x += self.speed
-            elif (isinstance(self.direction, Turn.LEFT)):
-                f += 1
-                if f <= 30:
-                    self.vectorPosition.x -= self.speed
-            elif (isinstance(self.direction, Turn.UP)):
-                f += 1
-                if f <= 30:
-                    self.vectorPosition.y -= self.speed
-            elif (isinstance(self.direction, Turn.DOWN)):
-                f += 1
-                if f <= 30:
-                    self.vectorPosition.y += self.speed
-            if f == 30:
-                f = 0
+    def move(self):
+        if (self.direction != Turn.NONE):
+            f = GameManager().return_time() % 30
+            if f <= 30:
+                if (self.direction == Turn.RIGHT):
+                        self.vectorPosition.x += self.speed * f / 30
+                elif (self.direction == Turn.LEFT):
+                        self.vectorPosition.x -= self.speed * f / 30
+                elif (self.direction == Turn.UP):
+                        self.vectorPosition.y -= self.speed * f / 30
+                elif (self.direction == Turn.DOWN):
+                        self.vectorPosition.y += self.speed * f / 30
+            if (f == 30):
+                self.checkBuffer()
 
     def checkBuffer(self):
-        if (isinstance(self.buffer, Turn.NONE) == False):
-            if (isinstance(self.buffer, Turn.RIGHT)):
+        if (self.direction == Turn.NONE):
+            if (self.direction == Turn.RIGHT):
                 if (GameManager().ReturnObject(self.X + 1, self.Y) == False):
                     self.turn(Turn.RIGHT)
                 else:
-                    pass
-            elif (isinstance(self.buffer, Turn.LEFT)):
+                    self.onCollision(Wall)
+            elif (self.direction == Turn.LEFT):
                 if (GameManager().ReturnObject(self.X - 1, self.Y) == False):
                     self.turn(Turn.LEFT)
                 else:
-                    pass
-            elif (isinstance(self.buffer, Turn.UP)):
+                    self.onCollision(Wall)
+            elif (self.direction == Turn.UP):
                 if (GameManager().ReturnObject(self.X, self.Y - 1) == False):
                     self.turn(Turn.UP)
                 else:
-                    pass
-            elif (isinstance(self.buffer, Turn.DOWN)):
+                    self.onCollision(Wall)
+            elif (self.direction == Turn.DOWN):
                 if (GameManager().ReturnObject(self.X, self.Y + 1) == False):
                     self.turn(Turn.DOWN)
                 else:
-                    pass
+                    self.onCollision(Wall)
 
     def turn(self, new_direction):
         if (pyray.is_key_pressed(pyray.KeyboardKey.KEY_W)):
@@ -92,7 +85,6 @@ class Player(GameObject):
             pass
         elif (pyray.is_key_pressed(pyray.KeyboardKey.KEY_D)):
             pass
-
 
 class Ghost(GameObject):
     def __init__(self):
