@@ -1,5 +1,6 @@
-from AppCore.Managers import GameManager
-from Objects import GameObject
+import AppCore.Managers
+from ObjectClasses.Objects import GameObject
+from ObjectClasses.MapObjects import Wall
 
 
 class Turn:
@@ -9,22 +10,26 @@ class Turn:
     LEFT = 4
     NONE = 0
 
+def GameManager():
+    return AppCore.Managers.AppManager.GameManager
+
 class Player(GameObject):
     def __init__(self):
         self.speed = 5
         self.direction = Turn.RIGHT
         self.buffer = Turn.NONE
+
     def onCollision(self, collide_object):
         if (isinstance(collide_object, Food)):
             collide_object.onCollision(self)
         elif (isinstance(collide_object, Ghost)):
-            if (GameManager.player_is_boosted == False):
+            if (GameManager().player_is_boosted == False):
                 self.Death()
-            if (GameManager.player_is_boosted):
+            if (GameManager().player_is_boosted):
                 collide_object.onCollision(self)
         elif (isinstance(collide_object, BigFood)):
             collide_object.onCollision()
-            GameManager.boost_player()
+            GameManager().boost_player()
         elif (isinstance(collide_object, Wall)):
             pass
 
@@ -45,22 +50,22 @@ class Player(GameObject):
     def checkBuffer(self):
         if (isinstance(self.buffer, Turn.NONE) == False):
             if (isinstance(self.buffer, Turn.RIGHT)):
-                if (GameManager.ReturnObject(self.X + 1, self.Y) == False):
+                if (GameManager().ReturnObject(self.X + 1, self.Y) == False):
                     self.turn(Turn.RIGHT)
                 else:
                     pass
             elif (isinstance(self.buffer, Turn.LEFT)):
-                if (GameManager.ReturnObject(self.X - 1, self.Y) == False):
+                if (GameManager().ReturnObject(self.X - 1, self.Y) == False):
                     self.turn(Turn.LEFT)
                 else:
                     pass
             elif (isinstance(self.buffer, Turn.UP)):
-                if (GameManager.ReturnObject(self.X, self.Y - 1) == False):
+                if (GameManager().ReturnObject(self.X, self.Y - 1) == False):
                     self.turn(Turn.UP)
                 else:
                     pass
             elif (isinstance(self.buffer, Turn.DOWN)):
-                if (GameManager.ReturnObject(self.X, self.Y + 1) == False):
+                if (GameManager().ReturnObject(self.X, self.Y + 1) == False):
                     self.turn(Turn.DOWN)
                 else:
                     pass
@@ -93,7 +98,7 @@ class Food(GameObject):
 
     def onCollision(self):
         if (self.active):
-            GameManager.addScore(self)
+            GameManager().addScore(self)
             self.active = False
 
 class BigFood(Food):
