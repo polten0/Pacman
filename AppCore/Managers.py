@@ -59,7 +59,7 @@ class MapManager:
         tileWidth = tileset["tilewidth"]
         spacing = tileset["spacing"]
         columns = tileset["columns"]
-
+        imagePath = tileset["image"]
 
         tiles = tileset["tiles"]
         data = layer["data"]
@@ -89,6 +89,8 @@ class MapManager:
 
                 mapObject.X = e * tileWidth * mapObject.scale
                 mapObject.Y = i * tileHeight * mapObject.scale
+
+                mapObject.filepath = fullpath + imagePath
 
                 self.matrix[i][e] = mapObject
                 self.listMapObjects.append(mapObject)
