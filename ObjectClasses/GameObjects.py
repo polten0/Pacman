@@ -12,7 +12,7 @@ class Turn:
 class Player(GameObject):
     def __init__(self):
         self.speed = 5
-        self.turn = Turn.RIGHT
+        self.direction = Turn.RIGHT
         self.buffer = Turn.NONE
     def onCollision(self, collide_object):
         if (isinstance(collide_object, Food)):
@@ -32,26 +32,38 @@ class Player(GameObject):
         pass
 
     def move(self):
-        if (isinstance(self.turn, Turn.NONE) == False):
-            if (isinstance(self.turn, Turn.RIGHT)):
+        if (isinstance(self.direction, Turn.NONE) == False):
+            if (isinstance(self.direction, Turn.RIGHT)):
                 self.vectorPosition.x += self.speed
-            elif (isinstance(self.turn, Turn.LEFT)):
+            elif (isinstance(self.direction, Turn.LEFT)):
                 self.vectorPosition.x -= self.speed
-            elif (isinstance(self.turn, Turn.UP)):
+            elif (isinstance(self.direction, Turn.UP)):
                 self.vectorPosition.y -= self.speed
-            elif (isinstance(self.turn, Turn.DOWN)):
+            elif (isinstance(self.direction, Turn.DOWN)):
                 self.vectorPosition.y += self.speed
 
     def checkBuffer(self):
         if (isinstance(self.buffer, Turn.NONE) == False):
             if (isinstance(self.buffer, Turn.RIGHT)):
-                pass
+                if (GameManager.ReturnObject(self.X + 1, self.Y) == False):
+                    self.turn(Turn.RIGHT)
+                else:
+                    pass
             elif (isinstance(self.buffer, Turn.LEFT)):
-                pass
+                if (GameManager.ReturnObject(self.X - 1, self.Y) == False):
+                    self.turn(Turn.LEFT)
+                else:
+                    pass
             elif (isinstance(self.buffer, Turn.UP)):
-                pass
+                if (GameManager.ReturnObject(self.X, self.Y - 1) == False):
+                    self.turn(Turn.UP)
+                else:
+                    pass
             elif (isinstance(self.buffer, Turn.DOWN)):
-                pass
+                if (GameManager.ReturnObject(self.X, self.Y + 1) == False):
+                    self.turn(Turn.DOWN)
+                else:
+                    pass
 
     def turn(self):
         pass
