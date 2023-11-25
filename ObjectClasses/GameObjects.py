@@ -41,16 +41,16 @@ class Player(GameObject):
         if (self.direction != Turn.NONE):
             if (self.direction == Turn.RIGHT):
                 if (GameManager().ReturnObject(self.matrixX() + 1, self.matrixY()) == True):
-                    self.direction == Turn.NONE
+                    self.direction = Turn.NONE
             elif (self.direction == Turn.LEFT):
                 if (GameManager().ReturnObject(self.matrixX() - 1, self.matrixY()) == True):
-                    self.sdirection == Turn.NONE
+                    self.direction = Turn.NONE
             elif (self.direction == Turn.UP):
                 if (GameManager().ReturnObject(self.matrixX(), self.matrixY() - 1) == True):
-                    self.direction == Turn.NONE
+                    self.direction = Turn.NONE
             elif (self.direction == Turn.DOWN):
                 if (GameManager().ReturnObject(self.matrixX(), self.matrixY() + 1) == True):
-                    self.direction == Turn.NONE
+                    self.direction = Turn.NONE
 
     def Death(self):
         pass
@@ -117,10 +117,11 @@ class Player(GameObject):
         f = GameManager().return_time() % 30
         self.WallCollisionCheck()
         if (f < 30):
-            print(self.speed)
+            print(self.direction, self.buffer)
             self.move()
-        if (f == 30):
             self.keyboardPressProcesser()
+        if (f == 30):
+
             self.checkBuffer()
             f = 30
 
