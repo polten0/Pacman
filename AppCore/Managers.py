@@ -111,7 +111,9 @@ class GameManager:
         self.score = 0
         self.mapManager = MapManager()
         self.listGameObjects = list([])
-        self.pacman_position = vec.Vector2(x=0, y=0)
+        self.Pacman = Player()
+        self.pacman_position = vec.Vector2(x = self.Pacman.matrixX(), y = self.Pacman.matrixY())
+        self.scale = 3
         self.t = 0
 
     def LoadContent(self):
@@ -121,18 +123,20 @@ class GameManager:
         self.t += 1
         for gameObject in self.listGameObjects:
             gameObject.update()
+        self.Pacman.update()
 
 
     def Draw(self):
         for gameObject in self.listGameObjects:
             gameObject.draw()
         self.mapManager.Draw()
+        self.Pacman.draw()
 
     def ReturnObject(self, x, y):
-        return self.mapManager.matrix[x][y].isCollide()
+        return self.mapManager.matrix[x][y].isCollide
 
     def CheckCollision(self, object_a, object_b):
-        if (pyray.check_collision_recs(object_a.rec, object_b.rec)):
+        if (object_a.matrixX == object_b.matrixX and object_a.matrixY == object_b.matrixY):
             object_a.OnCollision(object_b)
             object_b.OnCollision(object_a)
 

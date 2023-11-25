@@ -13,13 +13,17 @@ class Turn:
     NONE = 0
 
 def GameManager():
-    return AppCore.Managers.AppManager.GameManager
+    return AppCore.Managers.AppManager.instance.gameManager
 
 class Player(GameObject):
     def __init__(self):
-        self.speed = 5
+        super().__init__()
+        self.speed = 1
         self.direction = Turn.RIGHT
         self.buffer = Turn.NONE
+
+    def draw(self):
+        pyray.draw_rectangle(self.matrixPosition.x * 8 * GameManager().scale, self.matrixPosition.y * 8 * GameManager().scale, 8 * GameManager().scale, 8 * GameManager().scale, pyray.YELLOW)
 
     def onCollision(self, collide_object):
         if (isinstance(collide_object, Food)):
@@ -32,49 +36,50 @@ class Player(GameObject):
         elif (isinstance(collide_object, BigFood)):
             collide_object.onCollision()
             GameManager().boost_player()
-        elif (isinstance(collide_object, Wall)):
-            pass
+
+    def WallCollisionCheck(self):
+        if (self.direction != Turn.NONE):
+            if (self.direction == Turn.RIGHT):
+                if (GameManager().ReturnObject(self.matrixX() + 1, self.matrixY()) == True):
+                    self.direction == Turn.NONE
+            elif (self.direction == Turn.LEFT):
+                if (GameManager().ReturnObject(self.matrixX() - 1, self.matrixY()) == True):
+                    self.sdirection == Turn.NONE
+            elif (self.direction == Turn.UP):
+                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() - 1) == True):
+                    self.direction == Turn.NONE
+            elif (self.direction == Turn.DOWN):
+                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() + 1) == True):
+                    self.direction == Turn.NONE
 
     def Death(self):
         pass
 
     def move(self):
         if (self.direction != Turn.NONE):
-            f = GameManager().return_time() % 30
-            if f <= 30:
-                if (self.direction == Turn.RIGHT):
-                        GameManager().pacman_position.x += 1
-                elif (self.direction == Turn.LEFT):
-                        GameManager().pacman_position.x -= 1
-                elif (self.direction == Turn.UP):
-                        GameManager().pacman_position.y -= 1
-                elif (self.direction == Turn.DOWN):
-                        GameManager().pacman_position.y += 1
-            if (f == 30):
-                self.checkBuffer()
+            if (self.direction == Turn.RIGHT):
+                    self.setmatrixX(self.matrixX() + self.speed)
+            elif (self.direction == Turn.LEFT):
+                    self.setmatrixX(self.matrixX() - self.speed)
+            elif (self.direction == Turn.UP):
+                    self.setmatrixY(self.matrixY() - self.speed)
+            elif (self.direction == Turn.DOWN):
+                    self.setmatrixY(self.matrixY() + self.speed)
 
     def checkBuffer(self):
-        if (self.direction == Turn.NONE):
-            if (self.direction == Turn.RIGHT):
-                if (GameManager().ReturnObject(GameManager().pacman_position.x + 1, GameManager().pacman_position.y) == False):
+        if (self.buffer != Turn.NONE):
+            if (self.buffer == Turn.RIGHT):
+                if (GameManager().ReturnObject(self.matrixX() + 1, self.matrixY()) == False):
                     self.turn(Turn.RIGHT)
-                else:
-                    self.onCollision(Wall)
-            elif (self.direction == Turn.LEFT):
-                if (GameManager().ReturnObject(GameManager().pacman_position.x - 1, GameManager().pacman_position.y) == False):
+            elif (self.buffer == Turn.LEFT):
+                if (GameManager().ReturnObject(self.matrixX() - 1, self.matrixY()) == False):
                     self.turn(Turn.LEFT)
-                else:
-                    self.onCollision(Wall)
-            elif (self.direction == Turn.UP):
-                if (GameManager().ReturnObject(GameManager().pacman_position.x, GameManager().pacman_position.y - 1) == False):
+            elif (self.buffer == Turn.UP):
+                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() - 1) == False):
                     self.turn(Turn.UP)
-                else:
-                    self.onCollision(Wall)
-            elif (self.direction == Turn.DOWN):
-                if (GameManager().ReturnObject(GameManager().pacman_position.x, GameManager().pacman_position.y + 1) == False):
+            elif (self.buffer == Turn.DOWN):
+                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() + 1) == False):
                     self.turn(Turn.DOWN)
-                else:
-                    self.onCollision(Wall)
     def keyboardPressProcesser(self):
         if (pyray.is_key_pressed(pyray.KeyboardKey.KEY_W)):
             self.turn(Turn.UP)
@@ -87,25 +92,38 @@ class Player(GameObject):
 
     def turn(self, new_direction):
             if (new_direction == Turn.RIGHT):
-                if (GameManager().ReturnObject(GameManager().pacman_position.x + 1, GameManager().pacman_position.y) == False):
+                if (GameManager().ReturnObject(self.matrixX() + 1, self.matrixY()) == False):
                     self.direction = Turn.RIGHT
                 else:
                     self.buffer = Turn.RIGHT
             elif (new_direction == Turn.LEFT):
-                if (GameManager().ReturnObject(GameManager().pacman_position.x - 1, GameManager().pacman_position.y) == False):
+                if (GameManager().ReturnObject(self.matrixX() - 1, self.matrixY()) == False):
                     self.direction = Turn.LEFT
                 else:
                     self.buffer = Turn.LEFT
             elif (new_direction == Turn.UP):
-                if (GameManager().ReturnObject(GameManager().pacman_position.x, GameManager().pacman_position.y - 1) == False):
+                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() - 1) == False):
                     self.direction = Turn.UP
                 else:
                     self.buffer = Turn.UP
             elif (new_direction == Turn.DOWN):
-                if (GameManager().ReturnObject(GameManager().pacman_position.x, GameManager().pacman_position.y + 1) == False):
+                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() + 1) == False):
                     self.direction = Turn.DOWN
                 else:
                     self.buffer = Turn.DOWN
+
+
+    def update(self):
+        f = GameManager().return_time() % 30
+        self.WallCollisionCheck()
+        if (f < 30):
+            print(self.speed)
+            self.move()
+        if (f == 30):
+            self.keyboardPressProcesser()
+            self.checkBuffer()
+            f = 30
+
 
 
 class Ghost(GameObject):
