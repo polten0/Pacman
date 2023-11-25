@@ -1,12 +1,25 @@
+import pyray
+import os
 class Animation:
-    def config(self, textureName, totalFrames):
-        self.currentFrame = 0
-        self.totalFrames = totalFrames
+    def __init__(self, textureName, totalFrames, name):
         self.textureName = textureName
+        self.totalFrames = totalFrames
+        self.texture = None
+        self.width = None
+        self.height = None
+        self.currentFrame = 0
+        self.name = name
 
-    def __init__(self, textureName, totalFrames):
-        self.config(textureName, totalFrames)
+    def loadContent(self):
+        self.texture = pyray.load_texture(f"{os.getcwd()}/Content/{self.textureName}")
+
+        self.width = self.texture.width / self.totalFrames
+        self.height = self.texture.height
 
 class Animator:
     def __init__(self):
-        self.Animations = None
+        self.animations = list([])
+
+    def loadContent(self):
+        for animation in self.animations:
+            animation.loadContent()
