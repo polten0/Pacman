@@ -116,7 +116,7 @@ class Player(GameObject):
     def update(self):
         f = GameManager().return_time() % 60
         self.WallCollisionCheck()
-        print(self.direction)
+        print("RIGHT:", GameManager().PrintObject(self.matrixX() + 1, self.matrixY()), "LEFT:", GameManager().PrintObject(self.matrixX() - 1, self.matrixY()), "UP:", GameManager().PrintObject(self.matrixX(), self.matrixY() - 1), "DOWN:", GameManager().PrintObject(self.matrixX(), self.matrixY() + 1))
         if (f < 60):
             self.move()
             self.keyboardPressProcesser()

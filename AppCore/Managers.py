@@ -112,7 +112,7 @@ class GameManager:
         self.mapManager = MapManager()
         self.listGameObjects = list([])
         self.Pacman = Player()
-        self.pacman_position = vec.Vector2(y = self.Pacman.matrixY(), x = self.Pacman.matrixX())
+        self.pacman_position = vec.Vector2(x = self.Pacman.matrixX(), y = self.Pacman.matrixY())
         self.scale = 3
         self.t = 0
 
