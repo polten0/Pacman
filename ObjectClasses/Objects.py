@@ -28,7 +28,7 @@ class GameObject(Object, Interfaces.IUpdateableObject,
                  Interfaces.IDrawableObject):
     def __init__(self):
         super().__init__()
-        self.matrixPosition = vec.Vector2(x=1, y=1)
+        self.matrixPosition = vec.Vector2(y=1, x=1)
 
     def draw(self):
         pass
@@ -50,10 +50,10 @@ class GameObject(Object, Interfaces.IUpdateableObject,
 
 
     def setmatrixX(self, new):
-        self.matrixPosition = vec.Vector2(new, self.matrixPosition.y)
+        self.matrixPosition = vec.Vector2(self.matrixPosition.y, new)
 
     def setmatrixY(self, new):
-        self.matrixPosition = vec.Vector2(self.matrixPosition.x, new)
+        self.matrixPosition = vec.Vector2(new, self.matrixPosition.x)
 
 class MapObject(Object, Interfaces.IDrawableObject, Interfaces.ITextureableObject):
     def __init__(self):

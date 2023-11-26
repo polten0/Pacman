@@ -114,16 +114,16 @@ class Player(GameObject):
 
 
     def update(self):
-        f = GameManager().return_time() % 30
+        f = GameManager().return_time() % 60
         self.WallCollisionCheck()
-        if (f < 30):
-            print(self.direction, self.buffer)
+        print(self.direction)
+        if (f < 60):
             self.move()
             self.keyboardPressProcesser()
-        if (f == 30):
+        if (f == 60):
 
             self.checkBuffer()
-            f = 30
+            f = 0
 
 
 

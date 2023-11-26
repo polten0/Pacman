@@ -112,7 +112,7 @@ class GameManager:
         self.mapManager = MapManager()
         self.listGameObjects = list([])
         self.Pacman = Player()
-        self.pacman_position = vec.Vector2(x = self.Pacman.matrixX(), y = self.Pacman.matrixY())
+        self.pacman_position = vec.Vector2(y = self.Pacman.matrixY(), x = self.Pacman.matrixX())
         self.scale = 3
         self.t = 0
 
@@ -133,7 +133,10 @@ class GameManager:
         self.Pacman.draw()
 
     def ReturnObject(self, x, y):
-        return self.mapManager.matrix[x][y].isCollide
+        return self.mapManager.matrix[y][x].isCollide
+
+    def PrintObject(self, x, y):
+        print(self.mapManager.matrix[y][x])
 
     def CheckCollision(self, object_a, object_b):
         if (object_a.matrixX == object_b.matrixX and object_a.matrixY == object_b.matrixY):
@@ -141,7 +144,7 @@ class GameManager:
             object_b.OnCollision(object_a)
 
     def boost_player(self):
-        player_is_boosted = True
+        self.player_is_boosted = True
 
     def addScore(self, scoreObject):
         if (isinstance(scoreObject, Food)):
