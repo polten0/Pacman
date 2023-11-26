@@ -59,8 +59,12 @@ class Player(GameObject):
         if (self.direction != Turn.NONE):
             if (self.direction == Turn.RIGHT):
                     self.setmatrixX(self.matrixX() + self.speed)
+                    if (self.matrixX() > 26):
+                        self.setmatrixX(0)
             elif (self.direction == Turn.LEFT):
                     self.setmatrixX(self.matrixX() - self.speed)
+                    if (self.matrixX() == 0):
+                        self.setmatrixX(27)
             elif (self.direction == Turn.UP):
                     self.setmatrixY(self.matrixY() - self.speed)
             elif (self.direction == Turn.DOWN):
@@ -121,14 +125,9 @@ class Player(GameObject):
         f = GameManager().return_time() % 60
         self.WallCollisionCheck()
         print(self.buffer)
-        if (f < 60):
-            self.move()
-            self.keyboardPressProcesser()
-            self.checkBuffer()
-        if (f == 60):
-
-
-            f = 0
+        self.move()
+        self.keyboardPressProcesser()
+        self.checkBuffer()
 
 
 
