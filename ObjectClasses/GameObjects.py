@@ -94,21 +94,25 @@ class Player(GameObject):
             if (new_direction == Turn.RIGHT):
                 if (GameManager().ReturnObject(self.matrixX() + 1, self.matrixY()) == False):
                     self.direction = Turn.RIGHT
+                    self.buffer = Turn.NONE
                 else:
                     self.buffer = Turn.RIGHT
             elif (new_direction == Turn.LEFT):
                 if (GameManager().ReturnObject(self.matrixX() - 1, self.matrixY()) == False):
                     self.direction = Turn.LEFT
+                    self.buffer = Turn.NONE
                 else:
                     self.buffer = Turn.LEFT
             elif (new_direction == Turn.UP):
                 if (GameManager().ReturnObject(self.matrixX(), self.matrixY() - 1) == False):
                     self.direction = Turn.UP
+                    self.buffer = Turn.NONE
                 else:
                     self.buffer = Turn.UP
             elif (new_direction == Turn.DOWN):
                 if (GameManager().ReturnObject(self.matrixX(), self.matrixY() + 1) == False):
                     self.direction = Turn.DOWN
+                    self.buffer = Turn.NONE
                 else:
                     self.buffer = Turn.DOWN
 
@@ -116,13 +120,14 @@ class Player(GameObject):
     def update(self):
         f = GameManager().return_time() % 60
         self.WallCollisionCheck()
-        print("RIGHT:", GameManager().PrintObject(self.matrixX() + 1, self.matrixY()), "LEFT:", GameManager().PrintObject(self.matrixX() - 1, self.matrixY()), "UP:", GameManager().PrintObject(self.matrixX(), self.matrixY() - 1), "DOWN:", GameManager().PrintObject(self.matrixX(), self.matrixY() + 1))
+        print(self.buffer)
         if (f < 60):
             self.move()
             self.keyboardPressProcesser()
+            self.checkBuffer()
         if (f == 60):
 
-            self.checkBuffer()
+
             f = 0
 
 
