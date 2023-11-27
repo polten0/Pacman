@@ -25,6 +25,7 @@ class Animator:  # Контролирует состояние анимаций.
     def addAnimation(self, texture, totalFrames, totalTime, name):  # Через него добавляем новые анимации
         self.animations.append(Animation(texture, totalFrames, totalTime, name))
 
+
     def getSourceRectangle(self, name):  # Используется для получения прямоугольника на текстурке.
         selectedAnimation = None
         for animation in self.animations:
@@ -36,6 +37,13 @@ class Animator:  # Контролирует состояние анимаций.
 
     def updateRectangles(self):  # Этот метод вызывает обьект в своем Update
         for animation in self.animations:
-            if animation.interval / self.elapsedTime >= 1:
+            if animation.interval / animation.elapsedTime >= 1:
                 animation.currentFrame += 1
-        self.elapsedTime += pyray.get_frame_time()
+                animation.elapsedTime = 0
+            if animation.currentFrame == animation.totalFrames:
+                if animation.isRepeat:
+                    animation.RepeatData()
+                else:
+                    self.animations.remove(animation)
+                continue
+            animation.elapsedTime += pyray.get_frame_time()
