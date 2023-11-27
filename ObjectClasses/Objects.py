@@ -7,6 +7,7 @@ class Object:
     def __init__(self):
         self.vectorPosition = vec.Vector2(x=0, y=0)
 
+
     @property
     def X(self):
         return self.vectorPosition.x
@@ -27,6 +28,7 @@ class GameObject(Object, Interfaces.IUpdateableObject,
                  Interfaces.IDrawableObject):
     def __init__(self):
         super().__init__()
+        self.matrixPosition = vec.Vector2(x=1, y=1)
 
     def draw(self):
         pass
@@ -36,6 +38,22 @@ class GameObject(Object, Interfaces.IUpdateableObject,
 
     def onCollison(self):
         pass
+
+    def rec(self):
+        pass
+
+    def matrixY(self):
+        return self.matrixPosition.y
+
+    def matrixX(self):
+        return self.matrixPosition.x
+
+
+    def setmatrixX(self, new):
+        self.matrixPosition = vec.Vector2(new, self.matrixPosition.y)
+
+    def setmatrixY(self, new):
+        self.matrixPosition = vec.Vector2(self.matrixPosition.x, new)
 
 class MapObject(Object, Interfaces.IDrawableObject, Interfaces.ITextureableObject):
     def __init__(self):
@@ -68,6 +86,8 @@ class MapObject(Object, Interfaces.IDrawableObject, Interfaces.ITextureableObjec
                                pyray.Vector2(0, 0), 0, pyray.WHITE)
         pyray.draw_rectangle_lines_ex(self.collisionRectangle, 1, pyray.GREEN)
 
+
+
 class UIObject(Object, Interfaces.IUpdateableObject,
                Interfaces.IDrawableObject):
     def __init__(self):
@@ -78,3 +98,4 @@ class UIObject(Object, Interfaces.IUpdateableObject,
 
     def update(self):
         pass
+

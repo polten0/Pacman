@@ -1,6 +1,7 @@
 import pyray
 import vec
 
+from ObjectClasses.GameObjects import Player, Food, BigFood, Ghost
 from ObjectClasses.Objects import GameObject, MapObject, UIObject
 from ObjectClasses.MapObjects import Wall, Floor
 import json
@@ -11,6 +12,11 @@ class AppManager:
     instance = None
     screenWidth = 700
     screenHeight = 900
+
+    @property
+    def GameManager(self):
+        return self.gameManager
+
     def __init__(self):
         self.gameManager = GameManager()
         AppManager.instance = self
@@ -100,24 +106,55 @@ class MapManager:
 
 class GameManager:
     def __init__(self):
+        self.listGameObjects = list([GameObject()])
+        self.player_is_boosted = False
+        self.score = 0
         self.mapManager = MapManager()
         self.listGameObjects = list([])
+        self.Pacman = Player()
+        self.pacman_position = vec.Vector2(x = self.Pacman.matrixX(), y = self.Pacman.matrixY())
+        self.scale = 3
+        self.t = 0
 
     def LoadContent(self):
         self.mapManager.loadContent()
 
     def Update(self):
+        self.t += 1
         for gameObject in self.listGameObjects:
             gameObject.update()
+        self.Pacman.update()
+
 
     def Draw(self):
         for gameObject in self.listGameObjects:
             gameObject.draw()
         self.mapManager.Draw()
+        self.Pacman.draw()
 
-    def CheckCollision(self):
-        for gameObject in self.listGameObjects:
-            gameObject.update()
+    def ReturnObject(self, x, y):
+        return self.mapManager.matrix[y][x].isCollide
+
+    def PrintObject(self, x, y):
+        print(self.mapManager.matrix[y][x])
+
+    def CheckCollision(self, object_a, object_b):
+        if (object_a.matrixX == object_b.matrixX and object_a.matrixY == object_b.matrixY):
+            object_a.OnCollision(object_b)
+            object_b.OnCollision(object_a)
+
+    def boost_player(self):
+        self.player_is_boosted = True
+
+    def addScore(self, scoreObject):
+        if (isinstance(scoreObject, Food)):
+            self.score += 10
+        if (isinstance(scoreObject, BigFood)):
+            self.score += 50
+
+    def return_time(self):
+        return self.t
+
 class GUIManager:
     def __init__(self):
         pass
