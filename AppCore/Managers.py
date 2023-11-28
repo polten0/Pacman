@@ -119,7 +119,7 @@ class GameManager:
         self.scale = 3
         self.t = 0
         self.score_text = Label(10, 30, "SCORE:")
-        self.score_label = Label(215, 30, str(self.score))
+        self.score_label = Label(220, 30, str(self.score))
 
     def Draw(self):
         for gameObject in self.listGameObjects:
