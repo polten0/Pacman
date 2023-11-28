@@ -153,12 +153,13 @@ class GameManager:
         self.mapManager.Draw()
         self.Pacman.draw()
 
-
     def LoadContent(self):
         self.mapManager.loadContent()
         self.Pacman.loadContent()
         self.score_text.loadFont()
         self.score_label.loadFont()
+
+        self.findShortestPath(vec.Vector2(1, 1), vec.Vector2(5, 1))
 
     def Update(self):
         self.t += 1
@@ -185,7 +186,6 @@ class GameManager:
     def FoodCollision(self, PlayerObject):
         self.mapManager.matrixFood[PlayerObject.matrixY()][PlayerObject.matrixX()].onCollision()
 
-
     def boost_player(self):
         self.player_is_boosted = True
 
@@ -194,6 +194,76 @@ class GameManager:
             self.score += 10
         if (isinstance(scoreObject, BigFood)):
             self.score += 50
+
+    def findShortestPath(self, matrixStart, matrixEnd):
+        width = len(self.mapManager.matrix[0])
+        height = len(self.mapManager.matrix)
+        matrix = [[0 for e in range(width)] for i in range(height)]
+
+        for i in range(height):
+            for e in range(width):
+                if isinstance(self.mapManager.matrix[i][e], Wall):
+                    matrix[i][e] = -1
+
+        self.checkAndMark(matrix, matrixStart)
+        pass
+
+    def checkAndMark(self, matrix, matrixPosition):
+        """
+        if matrixPosition.x == 0:
+            if matrix[matrixPosition.y][matrixPosition.x + 1] == 0:
+                matrix[matrixPosition.y][matrixPosition.x + 1] += matrix[matrixPosition.y][matrixPosition.x] + 1
+        elif matrixPosition.x == len(matrix[0]):
+            if matrix[matrixPosition.y][matrixPosition.x - 1] == 0:
+                matrix[matrixPosition.y][matrixPosition.x - 1] += matrix[matrixPosition.y][matrixPosition.x] + 1
+        else:
+            if matrix[matrixPosition.y][matrixPosition.x - 1] == 0:
+                matrix[matrixPosition.y][matrixPosition.x - 1] += matrix[matrixPosition.y][matrixPosition.x] + 1
+            if matrix[matrixPosition.y][matrixPosition.x + 1] == 0:
+                matrix[matrixPosition.y][matrixPosition.x + 1] += matrix[matrixPosition.y][matrixPosition.x] + 1
+
+
+        if matrixPosition.y == 0:
+            if matrix[matrixPosition.y + 1][matrixPosition.x] == 0:
+                matrix[matrixPosition.y + 1][matrixPosition.x] += matrix[matrixPosition.y][matrixPosition.x] + 1
+        elif matrixPosition.y == len(matrix[0]):
+            if matrix[matrixPosition.y - 1][matrixPosition.x] == 0:
+                matrix[matrixPosition.y - 1][matrixPosition.x] += matrix[matrixPosition.y][matrixPosition.x] + 1
+        else:
+            if matrix[matrixPosition.y - 1][matrixPosition.x] == 0:
+                matrix[matrixPosition.y - 1][matrixPosition.x] += matrix[matrixPosition.y][matrixPosition.x] + 1
+            if matrix[matrixPosition.y + 1][matrixPosition.x] == 0:
+                matrix[matrixPosition.y + 1][matrixPosition.x] += matrix[matrixPosition.y][matrixPosition.x] + 1
+        """
+
+        for i in matrix:
+            for e in i:
+                print(e, end="  ")
+            print()
+
+        if matrix[matrixPosition.y][matrixPosition.x - 1] == 0:
+            matrix[matrixPosition.y][matrixPosition.x - 1] += matrix[matrixPosition.y][matrixPosition.x] + 1
+            self.checkAndMark(matrix, vec.Vector2(matrixPosition.x - 1, matrixPosition.y))
+        if matrix[matrixPosition.y][matrixPosition.x] > matrix[matrixPosition.y][matrixPosition.x - 1] and matrix[matrixPosition.y][matrixPosition.x - 1] != -1:
+            matrix[matrixPosition.y][matrixPosition.x] = matrix[matrixPosition.y][matrixPosition.x - 1] + 1
+
+        if matrix[matrixPosition.y][matrixPosition.x + 1] == 0:
+            matrix[matrixPosition.y][matrixPosition.x + 1] += matrix[matrixPosition.y][matrixPosition.x] + 1
+            self.checkAndMark(matrix, vec.Vector2(matrixPosition.x + 1, matrixPosition.y))
+        if matrix[matrixPosition.y][matrixPosition.x] > matrix[matrixPosition.y][matrixPosition.x + 1] and matrix[matrixPosition.y][matrixPosition.x + 1] != -1:
+            matrix[matrixPosition.y][matrixPosition.x] = matrix[matrixPosition.y][matrixPosition.x + 1] + 1
+
+        if matrix[matrixPosition.y - 1][matrixPosition.x] == 0:
+            matrix[matrixPosition.y - 1][matrixPosition.x] += matrix[matrixPosition.y][matrixPosition.x] + 1
+            self.checkAndMark(matrix, vec.Vector2(matrixPosition.x, matrixPosition.y - 1))
+        if matrix[matrixPosition.y][matrixPosition.x] > matrix[matrixPosition.y - 1][matrixPosition.x] and matrix[matrixPosition.y - 1][matrixPosition.x] != -1:
+            matrix[matrixPosition.y][matrixPosition.x] = matrix[matrixPosition.y - 1][matrixPosition.x] + 1
+
+        if matrix[matrixPosition.y + 1][matrixPosition.x] == 0:
+            matrix[matrixPosition.y + 1][matrixPosition.x] += matrix[matrixPosition.y][matrixPosition.x] + 1
+            self.checkAndMark(matrix, vec.Vector2(matrixPosition.x, matrixPosition.y + 1))
+        if matrix[matrixPosition.y][matrixPosition.x] > matrix[matrixPosition.y + 1][matrixPosition.x] and matrix[matrixPosition.y + 1][matrixPosition.x] != -1:
+            matrix[matrixPosition.y][matrixPosition.x] = matrix[matrixPosition.y + 1][matrixPosition.x] + 1
 
     def return_time(self):
         return self.t
