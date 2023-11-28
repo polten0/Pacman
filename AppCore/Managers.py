@@ -10,8 +10,10 @@ import os
 
 class AppManager:
     instance = None
-    screenWidth = 700
-    screenHeight = 900
+    screenWidth = 673
+    screenHeight = 950
+
+    upspace = 100
 
     @property
     def GameManager(self):
@@ -94,7 +96,7 @@ class MapManager:
                 mapObject.imageY = tileHeight * (GID // columns) + spacing * (GID // columns)
 
                 mapObject.X = e * tileWidth * mapObject.scale
-                mapObject.Y = i * tileHeight * mapObject.scale
+                mapObject.Y = i * tileHeight * mapObject.scale + AppManager.upspace
 
                 mapObject.filepath = fullpath + imagePath
 

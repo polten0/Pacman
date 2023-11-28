@@ -86,7 +86,7 @@ class Player(GameObject, ITextureableObject):
         t = GameManager().return_time()
 
         destinationRectangle = pyray.Rectangle(self.matrixX() * width * scale / 2 - width * scale / 4 + self.elapsedDist * vecDir.x,
-                                               self.matrixY() * height * scale / 2 - height * scale / 4 + self.elapsedDist * vecDir.y,
+                                               self.matrixY() * height * scale / 2 - height * scale / 4 + self.elapsedDist * vecDir.y + AppCore.Managers.AppManager.upspace,
                                                width * scale, height * scale)
 
         pyray.draw_texture_pro(texture, sourceRectangle, destinationRectangle, pyray.Vector2(0, 0), 0, pyray.WHITE)
