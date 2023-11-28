@@ -1,17 +1,18 @@
 {
-    "activeFile": "Content/Maps/WallTiles.json",
+    "activeFile": "Content/Maps/Map1.json",
     "expandedProjectPaths": [
         ".",
         "Content",
         "Content/Maps"
     ],
+    "file.lastUsedOpenFilter": "Все файлы (*)",
     "fileStates": {
         "Content/Maps/Map1.json": {
-            "scale": 4,
-            "selectedLayer": 0,
+            "scale": 3,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 123,
-                "y": 123.875
+                "x": 115.66666666666669,
+                "y": 140.33333333333331
             }
         },
         "Content/Maps/Map1.tmx": {
@@ -52,8 +53,8 @@
     ],
     "project": "map.tiled-project",
     "recentFiles": [
-        "Content/Maps/Map1.json",
         "Content/Maps/WallTiles.json",
+        "Content/Maps/Map1.json",
         "Content/Maps/WallTiles2.json",
         "Content/Maps/Map2.json",
         "Content/Maps/Map1.tmx",
