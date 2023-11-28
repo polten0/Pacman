@@ -1,8 +1,11 @@
-import pyray
+import os
 
+import pyray
+import vec
 import AppCore.Managers
 from ObjectClasses.Objects import GameObject
-from ObjectClasses.MapObjects import Wall
+from AppCore.Animator import Animator
+from AppCore.Interfaces import ITextureableObject
 
 
 class Turn:
@@ -15,15 +18,83 @@ class Turn:
 def GameManager():
     return AppCore.Managers.AppManager.instance.gameManager
 
-class Player(GameObject):
+class Player(GameObject, ITextureableObject):
     def __init__(self):
         super().__init__()
         self.speed = 1
         self.direction = Turn.RIGHT
         self.buffer = Turn.NONE
+        self.timeMove = 20
+
+        self.animator = Animator()
+        self.elapsedDist = 0
+
+    def loadContent(self):
+        path = os.getcwd() + "/Content/"
+
+        moveRight = pyray.load_texture(path + "PacmanMoveRight.png")
+        moveLeft = pyray.load_texture(path + "PacmanMoveLeft.png")
+        moveUp = pyray.load_texture(path + "PacmanMoveUp.png")
+        moveDown = pyray.load_texture(path + "PacmanMoveDown.png")
+
+        self.animator.addAnimation(moveRight, 2, 0.5, True, "MoveRight")
+        self.animator.addAnimation(moveLeft, 2, 0.5, True, "MoveLeft")
+        self.animator.addAnimation(moveUp, 2, 0.5, True, "MoveUp")
+        self.animator.addAnimation(moveDown, 2, 0.5, True, "MoveDown")
+
+        self.listTextures = {
+            "MoveRight": moveRight,
+            "MoveLeft": moveLeft,
+            "MoveUp": moveUp,
+            "MoveDown": moveDown,
+        }
+
+        self.listDirections = {
+            "MoveDown": vec.Vector2(0, 1),
+            "MoveUp": vec.Vector2(0, -1),
+            "MoveRight": vec.Vector2(1, 0),
+            "MoveLeft": vec.Vector2(-1, 0),
+            "None": vec.Vector2(0, 0)
+        }
 
     def draw(self):
-        pyray.draw_rectangle(self.matrixPosition.x * 8 * GameManager().scale, self.matrixPosition.y * 8 * GameManager().scale, 8 * GameManager().scale, 8 * GameManager().scale, pyray.YELLOW)
+        if self.direction == Turn.RIGHT:
+            name = "MoveRight"
+            self.lastDirection = name
+        elif self.direction == Turn.LEFT:
+            name = "MoveLeft"
+            self.lastDirection = name
+        elif self.direction == Turn.UP:
+            name = "MoveUp"
+            self.lastDirection = name
+        elif self.direction == Turn.DOWN:
+            name = "MoveDown"
+            self.lastDirection = name
+        elif self.direction == Turn.NONE:
+            name = self.lastDirection
+
+        vecDir = self.listDirections[name]
+        if self.direction == Turn.NONE:
+            vecDir = self.listDirections["None"]
+
+        scale = GameManager().scale
+        texture = self.listTextures[name]
+        sourceRectangle = self.animator.getSourceRectangle(name)
+
+        width = sourceRectangle.width
+        height = sourceRectangle.height
+        t = GameManager().return_time()
+
+        destinationRectangle = pyray.Rectangle(self.matrixX() * width * scale / 2 - width * scale / 4 + self.elapsedDist * vecDir.x,
+                                               self.matrixY() * height * scale / 2 - height * scale / 4 + self.elapsedDist * vecDir.y,
+                                               width * scale, height * scale)
+
+        pyray.draw_texture_pro(texture, sourceRectangle, destinationRectangle, pyray.Vector2(0, 0), 0, pyray.WHITE)
+        # pyray.draw_rectangle_lines_ex(destinationRectangle, 1, pyray.RED)
+
+        self.elapsedDist += width * scale * (1/self.timeMove) / 2
+
+
 
     def onCollision(self, collide_object):
         if (isinstance(collide_object, Food)):
@@ -84,6 +155,7 @@ class Player(GameObject):
             elif (self.buffer == Turn.DOWN):
                 if (GameManager().ReturnObject(self.matrixX(), self.matrixY() + 1) == False):
                     self.turn(Turn.DOWN)
+
     def keyboardPressProcesser(self):
         if (pyray.is_key_pressed(pyray.KeyboardKey.KEY_W)):
             self.turn(Turn.UP)
@@ -122,18 +194,17 @@ class Player(GameObject):
 
 
     def update(self):
-        f = GameManager().return_time() % 60
+        f = GameManager().return_time()
+
+        if not self.direction == Turn.NONE:
+            self.animator.updateRectangles()
         self.WallCollisionCheck()
         self.keyboardPressProcesser()
         self.checkBuffer()
-        print(self.buffer)
-        if (f % 2 == 0):
+
+        if (f % self.timeMove == 0):
             self.move()
-
-        f += 1
-
-        if (f == 60):
-            f = 0
+            self.elapsedDist = 0
 
 
 
@@ -154,9 +225,6 @@ class Ghost(GameObject):
         self.Frightened = False
         self.Timeout = True
         pass
-
-
-
 class Food(GameObject):
     def __init__(self):
         self.active = True
@@ -165,7 +233,6 @@ class Food(GameObject):
         if (self.active):
             GameManager().addScore(self)
             self.active = False
-
 class BigFood(Food):
     def __init__(self):
         super().__init__()

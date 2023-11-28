@@ -118,6 +118,7 @@ class GameManager:
 
     def LoadContent(self):
         self.mapManager.loadContent()
+        self.Pacman.loadContent()
 
     def Update(self):
         self.t += 1
