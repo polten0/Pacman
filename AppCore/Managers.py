@@ -42,6 +42,7 @@ class AppManager:
 class MapManager:
     def __init__(self):
         self.listMapObjects = list()
+        self.listFoodObjects = list()
         self.matrixFood = None # Матрица еды. Наполнен GameObject, Food, BigFood
         self.matrix = None
 
@@ -50,9 +51,15 @@ class MapManager:
         for mapObject in self.listMapObjects:
             mapObject.loadContent()
 
+        for food in self.listFoodObjects:
+            food.loadContent()
+
     def Draw(self):
         for mapObject in self.listMapObjects:
             mapObject.draw()
+
+        for food in self.listFoodObjects:
+            food.draw()
 
     def loadMap(self):
         fullpath = f"{os.getcwd()}/Content/Maps/"
@@ -119,6 +126,7 @@ class MapManager:
                 food.Y = mapObject.Y
 
                 self.matrixFood[i][e] = food
+                self.listFoodObjects.append(food)
 
                 c += 1
 
@@ -126,7 +134,7 @@ class GameManager:
     def __init__(self):
         self.listGameObjects = list([GameObject()])
         self.player_is_boosted = False
-        self.score = 100
+        self.score = 0
         self.mapManager = MapManager()
         self.listGameObjects = list([])
         self.Pacman = Player()
@@ -162,6 +170,10 @@ class GameManager:
     def ReturnObject(self, x, y):
         return self.mapManager.matrix[y][x].isCollide
 
+    def ReturnFood(self, x, y):
+        if(isinstance(self.mapManager.matrixFood[y][x], Food)):
+            return self.mapManager.matrixFood[y][x].active
+
     def PrintObject(self, x, y):
         print(self.mapManager.matrix[y][x])
 
@@ -169,6 +181,10 @@ class GameManager:
         if (object_a.matrixX == object_b.matrixX and object_a.matrixY == object_b.matrixY):
             object_a.OnCollision(object_b)
             object_b.OnCollision(object_a)
+
+    def FoodCollision(self, PlayerObject):
+        self.mapManager.matrixFood[PlayerObject.matrixY()][PlayerObject.matrixX()].onCollision()
+
 
     def boost_player(self):
         self.player_is_boosted = True
