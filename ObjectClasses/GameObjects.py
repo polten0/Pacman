@@ -24,6 +24,7 @@ class Player(GameObject, ITextureableObject):
         self.speed = 1
         self.direction = Turn.RIGHT
         self.buffer = Turn.NONE
+        self.timeMove = 20
 
         self.animator = Animator()
         self.elapsedDist = 0
@@ -72,6 +73,10 @@ class Player(GameObject, ITextureableObject):
         elif self.direction == Turn.NONE:
             name = self.lastDirection
 
+        vecDir = self.listDirections[name]
+        if self.direction == Turn.NONE:
+            vecDir = self.listDirections["None"]
+
         scale = GameManager().scale
         texture = self.listTextures[name]
         sourceRectangle = self.animator.getSourceRectangle(name)
@@ -80,14 +85,14 @@ class Player(GameObject, ITextureableObject):
         height = sourceRectangle.height
         t = GameManager().return_time()
 
-        destinationRectangle = pyray.Rectangle(self.matrixX() * width * scale / 2 - width * scale / 4 + self.elapsedDist,
-                                               self.matrixY() * height * scale / 2 - height * scale / 4,
+        destinationRectangle = pyray.Rectangle(self.matrixX() * width * scale / 2 - width * scale / 4 + self.elapsedDist * vecDir.x,
+                                               self.matrixY() * height * scale / 2 - height * scale / 4 + self.elapsedDist * vecDir.y,
                                                width * scale, height * scale)
 
         pyray.draw_texture_pro(texture, sourceRectangle, destinationRectangle, pyray.Vector2(0, 0), 0, pyray.WHITE)
         # pyray.draw_rectangle_lines_ex(destinationRectangle, 1, pyray.RED)
 
-        self.elapsedDist += width * scale * (1/30) / 2
+        self.elapsedDist += width * scale * (1/self.timeMove) / 2
 
 
 
@@ -189,13 +194,15 @@ class Player(GameObject, ITextureableObject):
 
 
     def update(self):
-        f = GameManager().return_time() % 60
+        f = GameManager().return_time()
+
         if not self.direction == Turn.NONE:
             self.animator.updateRectangles()
         self.WallCollisionCheck()
         self.keyboardPressProcesser()
         self.checkBuffer()
-        if (f % 30 == 0):
+
+        if (f % self.timeMove == 0):
             self.move()
             self.elapsedDist = 0
 
