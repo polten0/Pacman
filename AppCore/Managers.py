@@ -41,6 +41,7 @@ class AppManager:
 class MapManager:
     def __init__(self):
         self.listMapObjects = list()
+        self.listFood = list()  # Список еды (большой и маленькой)
         self.matrix = None
 
     def loadContent(self):
@@ -71,6 +72,7 @@ class MapManager:
 
         tiles = tileset["tiles"]
         data = layer["data"]
+        dataFood = mapdict["layers"][1]["data"]
         dataSizeRows = layer["height"]
         dataSizeColumns = layer["width"]
 
@@ -80,6 +82,8 @@ class MapManager:
         for i in range(dataSizeRows):
             for e in range(dataSizeColumns):
                 mapObject = None
+                food = GameObject()
+                foodGID = dataFood[c] - 1
                 GID = data[c] - 1
 
                 for tile in tiles:
@@ -88,6 +92,12 @@ class MapManager:
                             mapObject = Wall()
                         elif tile["type"] == "Floor":
                             mapObject = Floor()
+                    if tile["id"] == foodGID:
+                        if tile["type"] == "Food":
+                            food = Food()
+                        elif tile["type"] == "BigFood":
+                            food = BigFood()
+
 
                 mapObject.width = tileWidth
                 mapObject.height = tileHeight
@@ -103,8 +113,12 @@ class MapManager:
                 self.matrix[i][e] = mapObject
                 self.listMapObjects.append(mapObject)
 
-                c += 1
+                food.X = mapObject.X
+                food.Y = mapObject.Y
 
+                self.listFood.append(food)
+
+                c += 1
 
 class GameManager:
     def __init__(self):
