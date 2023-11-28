@@ -108,6 +108,11 @@ class Player(GameObject, ITextureableObject):
             collide_object.onCollision()
             GameManager().boost_player()
 
+
+    def FoodCollisionCheck(self):
+        if (GameManager().ReturnFood(self.matrixX(), self.matrixY()) == True):
+            self.onCollision(Food)
+
     def WallCollisionCheck(self):
         if (self.direction != Turn.NONE):
             if (self.direction == Turn.RIGHT):
@@ -225,6 +230,7 @@ class Ghost(GameObject):
         self.Frightened = False
         self.Timeout = True
         pass
+
 class Food(GameObject, ITextureableObject):
     def __init__(self):
         super().__init__()
@@ -241,7 +247,8 @@ class Food(GameObject, ITextureableObject):
 
     def draw(self):
         if self.active:
-            pyray.draw_texture_ex(self.texture, pyray.Vector2(self.X, self.Y), 0, 3.0, pyray.WHITE)
+            pyray.draw_texture_ex(self.texture, pyray.Vector2(self.X, self.Y), 0, GameManager().scale, pyray.WHITE)
+
 class BigFood(Food):
     def __init__(self):
         super().__init__()
