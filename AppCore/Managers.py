@@ -4,6 +4,7 @@ import vec
 from ObjectClasses.GameObjects import Player, Food, BigFood, Ghost
 from ObjectClasses.Objects import GameObject, MapObject, UIObject
 from ObjectClasses.MapObjects import Wall, Floor
+from ObjectClasses.UIObjects import Label
 import json
 import os
 
@@ -118,6 +119,15 @@ class GameManager:
         self.scale = 3
         self.t = 0
 
+    def Draw(self):
+        self.Score_label.draw()
+        for gameObject in self.listGameObjects:
+            gameObject.draw()
+
+        self.mapManager.Draw()
+        self.Pacman.draw()
+
+
     def LoadContent(self):
         self.mapManager.loadContent()
         self.Pacman.loadContent()
@@ -127,13 +137,6 @@ class GameManager:
         for gameObject in self.listGameObjects:
             gameObject.update()
         self.Pacman.update()
-
-
-    def Draw(self):
-        for gameObject in self.listGameObjects:
-            gameObject.draw()
-        self.mapManager.Draw()
-        self.Pacman.draw()
 
     def ReturnObject(self, x, y):
         return self.mapManager.matrix[y][x].isCollide
