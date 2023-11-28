@@ -116,14 +116,15 @@ class GameManager:
         self.pacman_position = vec.Vector2(x = self.Pacman.matrixX(), y = self.Pacman.matrixY())
         self.scale = 3
         self.t = 0
-        self.Score_label = Label(10, 600, self.score)
 
     def Draw(self):
+        self.Score_label.draw()
         for gameObject in self.listGameObjects:
             gameObject.draw()
+
         self.mapManager.Draw()
         self.Pacman.draw()
-        self.Score_label.draw()
+
 
     def LoadContent(self):
         self.mapManager.loadContent()
@@ -133,7 +134,6 @@ class GameManager:
         for gameObject in self.listGameObjects:
             gameObject.update()
         self.Pacman.update()
-        self.Score_label.update(self.score)
 
     def ReturnObject(self, x, y):
         return self.mapManager.matrix[y][x].isCollide
