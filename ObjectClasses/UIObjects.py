@@ -43,7 +43,17 @@ class Button(Label):
 
     def MouseProcessor(self):
         if (pyray.is_mouse_button_pressed(pyray.MouseButton.MOUSE_BUTTON_LEFT)):
+            if(pyray.get_mouse_x() > self.X + self.width or pyray.get_mouse_x() < self.X - self.width):
+                if(pyray.get_mouse_y() > self.Y + self.height or pyray.get_mouse_y() < self.Y - self.height):
+                    if (self.Quit):
+                        self.quit()
+                    elif not (self.Quit):
+                        self.play()
     def update(self):
+        self.MouseProcessor()
+
+    def draw(self):
+        pyray.draw_rectangle_rounded_lines(pyray.Rectangle(self.X, self.Y, self.width, self.height), 1.0, 10, 2, pyray.BLUE)
 
 
 
