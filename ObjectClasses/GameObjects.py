@@ -1,7 +1,7 @@
 import os
 
 import pyray
-
+import vec
 import AppCore.Managers
 from ObjectClasses.Objects import GameObject
 from AppCore.Animator import Animator
@@ -26,6 +26,7 @@ class Player(GameObject, ITextureableObject):
         self.buffer = Turn.NONE
 
         self.animator = Animator()
+        self.elapsedDist = 0
 
     def loadContent(self):
         path = os.getcwd() + "/Content/"
@@ -45,6 +46,14 @@ class Player(GameObject, ITextureableObject):
             "MoveLeft": moveLeft,
             "MoveUp": moveUp,
             "MoveDown": moveDown,
+        }
+
+        self.listDirections = {
+            "MoveDown": vec.Vector2(0, 1),
+            "MoveUp": vec.Vector2(0, -1),
+            "MoveRight": vec.Vector2(1, 0),
+            "MoveLeft": vec.Vector2(-1, 0),
+            "None": vec.Vector2(0, 0)
         }
 
     def draw(self):
@@ -69,14 +78,16 @@ class Player(GameObject, ITextureableObject):
 
         width = sourceRectangle.width
         height = sourceRectangle.height
+        t = GameManager().return_time()
 
-        destinationRectangle = pyray.Rectangle(self.matrixX() * width * scale / 2 - width * scale / 4,
+        destinationRectangle = pyray.Rectangle(self.matrixX() * width * scale / 2 - width * scale / 4 + self.elapsedDist,
                                                self.matrixY() * height * scale / 2 - height * scale / 4,
-                                               sourceRectangle.width * scale,
-                                               sourceRectangle.height * scale)
+                                               width * scale, height * scale)
 
         pyray.draw_texture_pro(texture, sourceRectangle, destinationRectangle, pyray.Vector2(0, 0), 0, pyray.WHITE)
-        pyray.draw_rectangle_lines_ex(destinationRectangle, 1, pyray.RED)
+        # pyray.draw_rectangle_lines_ex(destinationRectangle, 1, pyray.RED)
+
+        self.elapsedDist += width * scale * (1/30) / 2
 
 
 
@@ -184,13 +195,9 @@ class Player(GameObject, ITextureableObject):
         self.WallCollisionCheck()
         self.keyboardPressProcesser()
         self.checkBuffer()
-        if (f % 10 == 0):
+        if (f % 30 == 0):
             self.move()
-
-        f += 1
-
-        if (f == 60):
-            f = 0
+            self.elapsedDist = 0
 
 
 
@@ -211,9 +218,6 @@ class Ghost(GameObject):
         self.Frightened = False
         self.Timeout = True
         pass
-
-
-
 class Food(GameObject):
     def __init__(self):
         self.active = True
@@ -222,7 +226,6 @@ class Food(GameObject):
         if (self.active):
             GameManager().addScore(self)
             self.active = False
-
 class BigFood(Food):
     def __init__(self):
         super().__init__()

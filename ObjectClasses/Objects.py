@@ -84,7 +84,7 @@ class MapObject(Object, Interfaces.IDrawableObject, Interfaces.ITextureableObjec
     def draw(self):
         pyray.draw_texture_pro(self.texture, self.sourceRectangle, self.collisionRectangle,
                                pyray.Vector2(0, 0), 0, pyray.WHITE)
-        pyray.draw_rectangle_lines_ex(self.collisionRectangle, 0.5, pyray.GREEN)
+        # pyray.draw_rectangle_lines_ex(self.collisionRectangle, 0.5, pyray.GREEN)
 
 
 
