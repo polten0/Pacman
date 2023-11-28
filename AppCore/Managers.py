@@ -171,9 +171,8 @@ class GameManager:
         return self.mapManager.matrix[y][x].isCollide
 
     def ReturnFood(self, x, y):
-        return self.mapManager.matrixFood[y][x].active
-
-
+        if(self.mapManager.matrixFood[y][x] == Food):
+            return self.mapManager.matrixFood[y][x].active
 
     def PrintObject(self, x, y):
         print(self.mapManager.matrix[y][x])

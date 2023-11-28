@@ -204,6 +204,7 @@ class Player(GameObject, ITextureableObject):
         if not self.direction == Turn.NONE:
             self.animator.updateRectangles()
         self.WallCollisionCheck()
+        self.FoodCollisionCheck()
         self.keyboardPressProcesser()
         self.checkBuffer()
 
