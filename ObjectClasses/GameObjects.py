@@ -111,7 +111,8 @@ class Player(GameObject, ITextureableObject):
 
     def FoodCollisionCheck(self):
         if (GameManager().ReturnFood(self.matrixX(), self.matrixY()) == True):
-            self.onCollision(Food)
+            GameManager().FoodCollision(self)
+
 
     def WallCollisionCheck(self):
         if (self.direction != Turn.NONE):

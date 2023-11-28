@@ -171,7 +171,7 @@ class GameManager:
         return self.mapManager.matrix[y][x].isCollide
 
     def ReturnFood(self, x, y):
-        if(self.mapManager.matrixFood[y][x] == Food):
+        if(isinstance(self.mapManager.matrixFood[y][x], Food)):
             return self.mapManager.matrixFood[y][x].active
 
     def PrintObject(self, x, y):
@@ -181,6 +181,10 @@ class GameManager:
         if (object_a.matrixX == object_b.matrixX and object_a.matrixY == object_b.matrixY):
             object_a.OnCollision(object_b)
             object_b.OnCollision(object_a)
+
+    def FoodCollision(self, PlayerObject):
+        self.mapManager.matrixFood[PlayerObject.matrixY()][PlayerObject.matrixX()].onCollision()
+
 
     def boost_player(self):
         self.player_is_boosted = True
