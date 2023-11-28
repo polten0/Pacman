@@ -42,7 +42,7 @@ class AppManager:
 class MapManager:
     def __init__(self):
         self.listMapObjects = list()
-        self.listFood = list()  # Список еды (большой и маленькой)
+        self.matrixFood = None # Матрица еды. Наполнен GameObject, Food, BigFood
         self.matrix = None
 
     def loadContent(self):
@@ -78,6 +78,7 @@ class MapManager:
         dataSizeColumns = layer["width"]
 
         self.matrix = [[0 for j in range(dataSizeColumns)] for i in range(dataSizeRows)]
+        self.matrixFood = [[0 for j in range(dataSizeColumns)] for i in range(dataSizeRows)]
 
         c = 0
         for i in range(dataSizeRows):
@@ -117,7 +118,7 @@ class MapManager:
                 food.X = mapObject.X
                 food.Y = mapObject.Y
 
-                self.listFood.append(food)
+                self.matrixFood[i][e] = food
 
                 c += 1
 
