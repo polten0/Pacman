@@ -22,6 +22,7 @@ class AppManager:
 
     def __init__(self):
         self.gameManager = GameManager()
+        self.state = "Menu"
         AppManager.instance = self
 
     def Initialization(self):

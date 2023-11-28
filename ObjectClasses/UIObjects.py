@@ -1,6 +1,8 @@
 import pyray
 import vec
 import os
+
+import AppCore.Managers
 from ObjectClasses.Objects import UIObject
 
 class Label(UIObject):
@@ -24,3 +26,27 @@ class Label(UIObject):
     def loadFont(self):
         self.fontPath = f"{os.getcwd()}/Content/Font/joystix monospace.ttf"
         self.Font = pyray.load_font(self.fontPath)
+
+
+class Button(Label):
+    def __init__(self, q=True):
+        super().__init__()
+        self.Quit = q
+        self.width = 100
+        self.height = 20
+
+    def quit(self):
+        pyray.close_window()
+
+    def play(self):
+        AppCore.Managers.AppManager.instance.state = "Game"
+
+    def MouseProcessor(self):
+        if (pyray.is_mouse_button_pressed(pyray.MouseButton.MOUSE_BUTTON_LEFT)):
+    def update(self):
+
+
+
+
+
+
