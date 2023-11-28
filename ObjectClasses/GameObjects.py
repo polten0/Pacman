@@ -225,17 +225,32 @@ class Ghost(GameObject):
         self.Frightened = False
         self.Timeout = True
         pass
-class Food(GameObject):
+class Food(GameObject, ITextureableObject):
     def __init__(self):
+        super().__init__()
         self.active = True
+        self.texture = None
+
+    def loadContent(self):
+        self.texture = pyray.load_texture(f'{os.getcwd()}/Content/Food.png')
 
     def onCollision(self):
-        if (self.active):
+        if self.active:
             GameManager().addScore(self)
             self.active = False
+
+    def draw(self):
+        if self.active:
+            pyray.draw_texture_ex(self.texture, pyray.Vector2(self.X, self.Y), 0, 3.0, pyray.WHITE)
 class BigFood(Food):
     def __init__(self):
         super().__init__()
+        self.active = True
+        self.texture = None
 
+    def loadContent(self):
+        self.texture = pyray.load_texture(f'{os.getcwd()}/Content/BigFood.png')
 
-
+    def draw(self):
+        if self.active:
+            pyray.draw_texture_ex(self.texture, pyray.Vector2(self.X, self.Y), 0, 3.0, pyray.WHITE)
