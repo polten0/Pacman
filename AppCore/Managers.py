@@ -1,8 +1,8 @@
 import pyray
 import vec
 
-from ObjectClasses.GameObjects import Player, Food, BigFood, Ghost
-from ObjectClasses.Objects import GameObject, MapObject, UIObject
+from ObjectClasses.GameObjects import Player, Food, BigFood, RedGhost
+from ObjectClasses.Objects import GameObject
 from ObjectClasses.MapObjects import Wall, Floor
 from ObjectClasses.UIObjects import Label
 import json
@@ -138,11 +138,15 @@ class GameManager:
         self.mapManager = MapManager()
         self.listGameObjects = list([])
         self.Pacman = Player()
-        self.pacman_position = vec.Vector2(x = self.Pacman.matrixX(), y = self.Pacman.matrixY())
         self.scale = 3
         self.t = 0
         self.score_text = Label(10, 30, "SCORE:")
         self.score_label = Label(220, 30, str(self.score))
+
+        self.ghosts = []
+        ghost = RedGhost()
+        ghost.matrixPosition = vec.Vector2(15, 8)
+        self.ghosts.append(ghost)
 
     def Draw(self):
         for gameObject in self.listGameObjects:
@@ -151,6 +155,9 @@ class GameManager:
         self.score_text.draw()
         self.score_label.draw()
         self.mapManager.Draw()
+
+        for ghost in self.ghosts:
+            ghost.draw()
         self.Pacman.draw()
 
     def LoadContent(self):
@@ -159,13 +166,19 @@ class GameManager:
         self.score_text.loadFont()
         self.score_label.loadFont()
 
-        self.findShortestPath(vec.Vector2(21, 17), vec.Vector2(6, 14))
+        for ghost in self.ghosts:
+            ghost.loadContent()
 
     def Update(self):
         self.t += 1
+
         for gameObject in self.listGameObjects:
             gameObject.update()
+
         self.Pacman.update()
+        for ghost in self.ghosts:
+            ghost.update()
+
         self.score_label.update(str(self.score))
 
     def ReturnObject(self, x, y):
@@ -195,6 +208,9 @@ class GameManager:
         if (isinstance(scoreObject, BigFood)):
             self.score += 50
 
+    def getPlayerPos(self):
+        return self.Pacman.matrixPosition
+
     def findShortestPath(self, matrixStart, matrixEnd):
         width = len(self.mapManager.matrix[0])
         height = len(self.mapManager.matrix)
@@ -209,12 +225,10 @@ class GameManager:
         matrix[matrixStart.y][matrixStart.x] = 0
 
         self.checkAndMark(matrix, matrixStart)
-        self.buildPath(matrix, path, matrixEnd, matrixStart)\
+        self.buildPath(matrix, path, matrixEnd, matrixStart)
 
-        path.reverse()
-
+        # path.reverse()
         return path
-
 
     def checkAndMark(self, matrix, pos):
         """
@@ -266,11 +280,19 @@ class GameManager:
         """ # Вывод матрицы
 
 
-        if matrix[pos.y][pos.x - 1] == None:
-            matrix[pos.y][pos.x - 1] = matrix[pos.y][pos.x] + 1
-            self.checkAndMark(matrix, vec.Vector2(pos.x - 1, pos.y))
-        if matrix[pos.y][pos.x] > matrix[pos.y][pos.x - 1] and matrix[pos.y][pos.x - 1] != -1:
-            matrix[pos.y][pos.x] = matrix[pos.y][pos.x - 1] + 1
+        if pos.x == 0:
+            l = len(matrix[0]) - 1
+            if matrix[pos.y][l] == None:
+                matrix[pos.y][l] = matrix[pos.y][pos.x] + 1
+                self.checkAndMark(matrix, vec.Vector2(l, pos.y))
+            if matrix[pos.y][pos.x] > matrix[pos.y][l] and matrix[pos.y][l] != -1:
+                matrix[pos.y][pos.x] = matrix[pos.y][l] + 1
+        else:
+            if matrix[pos.y][pos.x - 1] == None:
+                matrix[pos.y][pos.x - 1] = matrix[pos.y][pos.x] + 1
+                self.checkAndMark(matrix, vec.Vector2(pos.x - 1, pos.y))
+            if matrix[pos.y][pos.x] > matrix[pos.y][pos.x - 1] and matrix[pos.y][pos.x - 1] != -1:
+                matrix[pos.y][pos.x] = matrix[pos.y][pos.x - 1] + 1
 
         if pos.x == len(matrix[0]) - 1:
             if matrix[pos.y][0] == None:
@@ -297,9 +319,13 @@ class GameManager:
         if matrix[pos.y][pos.x] > matrix[pos.y + 1][pos.x] and matrix[pos.y + 1][pos.x] != -1:
             matrix[pos.y][pos.x] = matrix[pos.y + 1][pos.x] + 1
 
-
-        if matrix[pos.y][pos.x - 1] - matrix[pos.y][pos.x] > 1:
-            self.checkAndMark(matrix, vec.Vector2(pos.x - 1, pos.y))
+        if pos.x == 0:
+            l = len(matrix[0]) - 1
+            if matrix[pos.y][l] - matrix[pos.y][pos.x] > 1:
+                self.checkAndMark(matrix, vec.Vector2(l, pos.y))
+        else:
+            if matrix[pos.y][pos.x - 1] - matrix[pos.y][pos.x] > 1:
+                self.checkAndMark(matrix, vec.Vector2(pos.x - 1, pos.y))
         if pos.x == len(matrix[0]) - 1:
             if matrix[pos.y][0] - matrix[pos.y][pos.x] > 1:
                 self.checkAndMark(matrix, vec.Vector2(0, pos.y))
@@ -313,16 +339,27 @@ class GameManager:
 
     def buildPath(self, matrix, path, pos, endPos):
         if pos != endPos:
-            if matrix[pos.y][pos.x] - matrix[pos.y][pos.x - 1] == 1:
-                path.append(vec.Vector2(1, 0))
-                self.buildPath(matrix, path, vec.Vector2(pos.x - 1, pos.y), endPos)
-            elif matrix[pos.y][pos.x] - matrix[pos.y][pos.x + 1] == 1:
-                path.append(vec.Vector2(-1, 0))
-                self.buildPath(matrix, path, vec.Vector2(pos.x + 1, pos.y), endPos)
-            elif matrix[pos.y][pos.x] - matrix[pos.y - 1][pos.x] == 1:
+            if pos.x == 0:
+                l = len(matrix[0]) - 1
+                if matrix[pos.y][pos.x] - matrix[pos.y][l] == 1:
+                    path.append(vec.Vector2(1, 0))
+                    self.buildPath(matrix, path, vec.Vector2(l, pos.y), endPos)
+            else:
+                if matrix[pos.y][pos.x] - matrix[pos.y][pos.x - 1] == 1:
+                    path.append(vec.Vector2(1, 0))
+                    self.buildPath(matrix, path, vec.Vector2(pos.x - 1, pos.y), endPos)
+            if pos.x == len(matrix[0]) - 1:
+                if matrix[pos.y][pos.x] - matrix[pos.y][0] == 1:
+                    path.append(vec.Vector2(-1, 0))
+                    self.buildPath(matrix, path, vec.Vector2(0, pos.y), endPos)
+            else:
+                if matrix[pos.y][pos.x] - matrix[pos.y][pos.x + 1] == 1:
+                    path.append(vec.Vector2(-1, 0))
+                    self.buildPath(matrix, path, vec.Vector2(pos.x + 1, pos.y), endPos)
+            if matrix[pos.y][pos.x] - matrix[pos.y - 1][pos.x] == 1:
                 path.append(vec.Vector2(0, 1))
                 self.buildPath(matrix, path, vec.Vector2(pos.x, pos.y - 1), endPos)
-            elif matrix[pos.y][pos.x] - matrix[pos.y + 1][pos.x] == 1:
+            if matrix[pos.y][pos.x] - matrix[pos.y + 1][pos.x] == 1:
                 path.append(vec.Vector2(0, -1))
                 self.buildPath(matrix, path, vec.Vector2(pos.x, pos.y + 1), endPos)
         else:

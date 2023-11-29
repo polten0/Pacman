@@ -24,7 +24,7 @@ class Player(GameObject, ITextureableObject):
         self.speed = 1
         self.direction = Turn.RIGHT
         self.buffer = Turn.NONE
-        self.timeMove = 20
+        self.timeMove = 10
 
         self.animator = Animator()
         self.elapsedDist = 0
@@ -213,13 +213,20 @@ class Player(GameObject, ITextureableObject):
             self.move()
             self.elapsedDist = 0
 
-
-
-
-class Ghost(GameObject):
+class Ghost(GameObject, ITextureableObject):
     def __init__(self):
+        super().__init__()
         self.Frightened = False
         self.Timeout = False
+
+        self.path = None
+
+    def loadContent(self):
+        pass
+
+    def draw(self):
+        pass
+
 
     def onCollision(self, collide_object):
         if (isinstance(collide_object, Player)):
@@ -228,10 +235,48 @@ class Ghost(GameObject):
             else:
                 collide_object.onCollision()
 
+
     def Death(self):
         self.Frightened = False
         self.Timeout = True
+
+
+    def move(self):
+        if self.path != None:
+            if len(self.path) == 0:
+                self.getPath()
+            self.matrixPosition = vec.Vector2(self.path[-1].x + self.matrixX(), self.matrixY())
+            self.matrixPosition = vec.Vector2(self.matrixX(), self.matrixY() + self.path[-1].y)
+            self.path.pop()
+
+        if self.matrixX() < 0:
+            self.matrixPosition = vec.Vector2(27, self.matrixY())
+        elif self.matrixX() > 27:
+            self.matrixPosition = vec.Vector2(0, self.matrixY())
+
+    def getPath(self):
         pass
+
+    def update(self):
+        time = GameManager().return_time()
+        if time % 60 == 0:
+            self.getPath()
+            self.elapsedTimePath = 0
+
+        if time % 20 == 0:
+            self.move()
+            self.elapsedTimeMove = 0
+class RedGhost(Ghost):
+    def __init__(self):
+        super().__init__()
+
+    def draw(self):
+        if not self.Timeout:
+            pyray.draw_rectangle(self.matrixX() * 8 * GameManager().scale, self.matrixY() * 8 * GameManager().scale + AppCore.Managers.AppManager.upspace,
+                                24, 24, pyray.RED)
+
+    def getPath(self):
+        self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
 
 class Food(GameObject, ITextureableObject):
     def __init__(self):
