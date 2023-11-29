@@ -22,20 +22,35 @@ class AppManager:
 
     def __init__(self):
         self.gameManager = GameManager()
+        self.GUIManager = GUIManager()
         AppManager.instance = self
+        self.state = "game"
 
     def Initialization(self):
         pyray.init_window(AppManager.screenWidth, AppManager.screenHeight, 'Game')
         self.gameManager.LoadContent()
 
+    def SwitchState(self, state):
+        if (state == "game"):
+            self.gameManager.LoadContent()
+        elif (state == "menu"):
+            self.GUIManager.LoadContent()
+        self.state = state
+
+
     def Update(self):
-        self.gameManager.Update()
+        if (self.state == "game"):
+            self.gameManager.Update()
 
     def Draw(self):
         pyray.clear_background(pyray.BLACK)
         pyray.begin_drawing()
 
-        self.gameManager.Draw()
+        if (self.state == "game"):
+            self.gameManager.Draw()
+
+        elif (self.state == "menu"):
+            self.GUIManager.Draw()
 
         pyray.end_drawing()
 
@@ -166,6 +181,7 @@ class GameManager:
             gameObject.update()
         self.Pacman.update()
         self.score_label.update(str(self.score))
+        print(pyray.get_frame_time() * 60)
 
     def ReturnObject(self, x, y):
         return self.mapManager.matrix[y][x].isCollide
@@ -188,6 +204,9 @@ class GameManager:
 
     def boost_player(self):
         self.player_is_boosted = True
+
+    def gameOver(self):
+        pass
 
     def addScore(self, scoreObject):
         if (isinstance(scoreObject, Food)):

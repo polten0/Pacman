@@ -24,8 +24,8 @@ class Player(GameObject, ITextureableObject):
         self.speed = 1
         self.direction = Turn.RIGHT
         self.buffer = Turn.NONE
-        self.timeMove = 20
-
+        self.timeMove = 10
+        self.lives = 3
         self.animator = Animator()
         self.elapsedDist = 0
 
@@ -130,7 +130,9 @@ class Player(GameObject, ITextureableObject):
                     self.direction = Turn.NONE
 
     def Death(self):
-        pass
+        self.lives -= 1
+        if (self.lives <= 0):
+            GameManager().gameOver()
 
     def move(self):
         if (self.direction != Turn.NONE):

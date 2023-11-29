@@ -3,7 +3,7 @@ from AppCore import Managers
 
 
 def main():
-    pyray.set_target_fps(60)
+    pyray.set_target_fps(120)
     appManager = Managers.AppManager()
 
     appManager.Initialization()
