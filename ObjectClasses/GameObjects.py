@@ -24,8 +24,8 @@ class Player(GameObject, ITextureableObject):
         self.speed = 1
         self.direction = Turn.RIGHT
         self.buffer = Turn.NONE
-        self.timeMove = 20
-
+        self.timeMove = 10
+        self.lives = 3
         self.animator = Animator()
         self.elapsedDist = 0
 
@@ -108,6 +108,12 @@ class Player(GameObject, ITextureableObject):
             collide_object.onCollision()
             GameManager().boost_player()
 
+
+    def FoodCollisionCheck(self):
+        if (GameManager().ReturnFood(self.matrixX(), self.matrixY()) == True):
+            GameManager().FoodCollision(self)
+
+
     def WallCollisionCheck(self):
         if (self.direction != Turn.NONE):
             if (self.direction == Turn.RIGHT):
@@ -124,7 +130,9 @@ class Player(GameObject, ITextureableObject):
                     self.direction = Turn.NONE
 
     def Death(self):
-        pass
+        self.lives -= 1
+        if (self.lives <= 0):
+            GameManager().gameOver()
 
     def move(self):
         if (self.direction != Turn.NONE):
@@ -199,6 +207,7 @@ class Player(GameObject, ITextureableObject):
         if not self.direction == Turn.NONE:
             self.animator.updateRectangles()
         self.WallCollisionCheck()
+        self.FoodCollisionCheck()
         self.keyboardPressProcesser()
         self.checkBuffer()
 
@@ -225,6 +234,7 @@ class Ghost(GameObject):
         self.Frightened = False
         self.Timeout = True
         pass
+
 class Food(GameObject, ITextureableObject):
     def __init__(self):
         super().__init__()
@@ -241,7 +251,8 @@ class Food(GameObject, ITextureableObject):
 
     def draw(self):
         if self.active:
-            pyray.draw_texture_ex(self.texture, pyray.Vector2(self.X, self.Y), 0, 3.0, pyray.WHITE)
+            pyray.draw_texture_ex(self.texture, pyray.Vector2(self.X, self.Y), 0, GameManager().scale, pyray.WHITE)
+
 class BigFood(Food):
     def __init__(self):
         super().__init__()

@@ -36,6 +36,9 @@ class GameObject(Object, Interfaces.IUpdateableObject,
     def update(self):
         pass
 
+    def loadContent(self):
+        pass
+
     def onCollison(self):
         pass
 
