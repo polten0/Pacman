@@ -39,7 +39,7 @@ class GameObject(Object, Interfaces.IUpdateableObject,
     def loadContent(self):
         pass
 
-    def onCollison(self):
+    def onCoallison(self):
         pass
 
     def rec(self):
