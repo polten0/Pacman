@@ -243,7 +243,7 @@ class Food(GameObject, ITextureableObject):
         self.texture = None
 
     def loadContent(self):
-        self.texture = pyray.load_texture(f'{os.getcwd()}/Content/Food.png')
+        self.texture = pyray.load_texture(f'{os.getcwd()}/Content/ood.png')
 
     def onCollision(self):
         if self.active:
