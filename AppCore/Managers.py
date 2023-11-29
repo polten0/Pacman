@@ -262,7 +262,7 @@ class GUIManager:
             self.welcoming_label = Label(220, 20, new_text)
 
         if new_text == "you won!":
-            self.welcoming_label = Label(220, 2, new_text)
+            self.welcoming_label = Label(220, 20, new_text)
 
         self.LoadContent()
     def Draw(self):

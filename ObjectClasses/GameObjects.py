@@ -166,7 +166,7 @@ class Player(GameObject, ITextureableObject):
 
     def keyboardPressProcesser(self):
         if (pyray.is_key_pressed(pyray.KeyboardKey.KEY_W)):
-            self.turn(Turn.UP)
+                self.turn(Turn.UP)
         elif (pyray.is_key_pressed(pyray.KeyboardKey.KEY_A)):
             self.turn(Turn.LEFT)
         elif (pyray.is_key_pressed(pyray.KeyboardKey.KEY_S)):
@@ -175,30 +175,30 @@ class Player(GameObject, ITextureableObject):
             self.turn(Turn.RIGHT)
 
     def turn(self, new_direction):
-            if (new_direction == Turn.RIGHT):
-                if (GameManager().ReturnObject(self.matrixX() + 1, self.matrixY()) == False):
-                    self.direction = Turn.RIGHT
-                    self.buffer = Turn.NONE
-                else:
-                    self.buffer = Turn.RIGHT
-            elif (new_direction == Turn.LEFT):
-                if (GameManager().ReturnObject(self.matrixX() - 1, self.matrixY()) == False):
-                    self.direction = Turn.LEFT
-                    self.buffer = Turn.NONE
-                else:
-                    self.buffer = Turn.LEFT
-            elif (new_direction == Turn.UP):
-                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() - 1) == False):
-                    self.direction = Turn.UP
-                    self.buffer = Turn.NONE
-                else:
-                    self.buffer = Turn.UP
-            elif (new_direction == Turn.DOWN):
-                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() + 1) == False):
-                    self.direction = Turn.DOWN
-                    self.buffer = Turn.NONE
-                else:
-                    self.buffer = Turn.DOWN
+        if (new_direction == Turn.RIGHT):
+            if (GameManager().ReturnObject(self.matrixX() + 1, self.matrixY()) == False):
+                self.direction = Turn.RIGHT
+                self.buffer = Turn.NONE
+            else:
+                self.buffer = Turn.RIGHT
+        elif (new_direction == Turn.LEFT):
+            if (GameManager().ReturnObject(self.matrixX() - 1, self.matrixY()) == False):
+                self.direction = Turn.LEFT
+                self.buffer = Turn.NONE
+            else:
+                self.buffer = Turn.LEFT
+        elif (new_direction == Turn.UP):
+            if (GameManager().ReturnObject(self.matrixX(), self.matrixY() - 1) == False):
+                self.direction = Turn.UP
+                self.buffer = Turn.NONE
+            else:
+                self.buffer = Turn.UP
+        elif (new_direction == Turn.DOWN):
+            if (GameManager().ReturnObject(self.matrixX(), self.matrixY() + 1) == False):
+                self.direction = Turn.DOWN
+                self.buffer = Turn.NONE
+            else:
+                self.buffer = Turn.DOWN
 
 
     def update(self):
@@ -213,6 +213,7 @@ class Player(GameObject, ITextureableObject):
 
         if (f % self.timeMove == 0):
             self.move()
+
             self.elapsedDist = 0
 
 
