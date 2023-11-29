@@ -4,7 +4,7 @@ import vec
 from ObjectClasses.GameObjects import Player, Food, BigFood, Ghost
 from ObjectClasses.Objects import GameObject, MapObject, UIObject
 from ObjectClasses.MapObjects import Wall, Floor
-from ObjectClasses.UIObjects import Label
+from ObjectClasses.UIObjects import Label, Button
 import json
 import os
 
@@ -20,15 +20,17 @@ class AppManager:
     def GameManager(self):
         return self.gameManager
 
+    def GUIManager(self):
+        return self.GUIManager
     def __init__(self):
         self.gameManager = GameManager()
         self.GUIManager = GUIManager()
         AppManager.instance = self
-        self.state = "game"
+        self.state = "menu"
 
     def Initialization(self):
         pyray.init_window(AppManager.screenWidth, AppManager.screenHeight, 'Game')
-        self.gameManager.LoadContent()
+        self.GUIManager.LoadContent()
 
     def SwitchState(self, state):
         if (state == "game"):
@@ -39,6 +41,9 @@ class AppManager:
 
 
     def Update(self):
+        if (self.state == "menu"):
+            self.GUIManager.Update()
+
         if (self.state == "game"):
             self.gameManager.Update()
 
@@ -218,11 +223,27 @@ class GameManager:
         return self.t
 
 class GUIManager:
-    def __init__(self):
-        pass
+    def __init__(self, welcome_text="welcome to pac-man!"):
+        self.instance = self
+        self.welcoming_label = Label(70, 20, welcome_text)
+        self.play_button = Button(274, 375, "play", False)
+        self.quit_button = Button(274, 475)
+        self.score_label = Label(318, 800, '0')
+
+        if welcome_text == "you lost!":
+            self.welcoming_label = Label(220, 20, welcome_text)
+
+
+    def LoadContent(self):
+        self.welcoming_label.loadFont()
+        self.play_button.Label.loadFont()
+        self.quit_button.Label.loadFont()
 
     def Update(self):
-        pass
+        self.play_button.update()
+        self.quit_button.update()
 
     def Draw(self):
-        pass
+        self.welcoming_label.draw()
+        self.play_button.draw()
+        self.quit_button.draw()
