@@ -132,14 +132,13 @@ class MapManager:
 
 class GameManager:
     def __init__(self):
-        self.listGameObjects = list([GameObject()])
         self.player_is_boosted = False
         self.score = 0
         self.mapManager = MapManager()
-        self.listGameObjects = list([])
         self.Pacman = Player()
         self.scale = 3
         self.t = 0
+
         self.score_text = Label(10, 30, "SCORE:")
         self.score_label = Label(220, 30, str(self.score))
 
@@ -149,9 +148,6 @@ class GameManager:
         self.ghosts.append(ghost)
 
     def Draw(self):
-        for gameObject in self.listGameObjects:
-            gameObject.draw()
-
         self.score_text.draw()
         self.score_label.draw()
         self.mapManager.Draw()
@@ -172,10 +168,8 @@ class GameManager:
     def Update(self):
         self.t += 1
 
-        for gameObject in self.listGameObjects:
-            gameObject.update()
-
         self.Pacman.update()
+
         for ghost in self.ghosts:
             ghost.update()
 
