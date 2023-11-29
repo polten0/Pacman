@@ -206,13 +206,14 @@ class Player(GameObject, ITextureableObject):
         f = GameManager().return_time()
         if (f % self.timeMove == 0):
             self.move()
+            self.checkBuffer()
             self.elapsedDist = 0
         if not self.direction == Turn.NONE:
             self.animator.updateRectangles()
         self.WallCollisionCheck()
         self.FoodCollisionCheck()
         self.keyboardPressProcesser()
-        self.checkBuffer()
+
 
 
 
@@ -243,7 +244,7 @@ class Food(GameObject, ITextureableObject):
         self.texture = None
 
     def loadContent(self):
-        self.texture = pyray.load_texture(f'{os.getcwd()}/Content/ood.png')
+        self.texture = pyray.load_texture(f'{os.getcwd()}/Content/Food.png')
 
     def onCollision(self):
         if self.active:
