@@ -20,13 +20,11 @@ class AppManager:
     def GameManager(self):
         return self.gameManager
 
-    def GUIManager(self):
-        return self.GUIManager
     def __init__(self):
         self.gameManager = GameManager()
         self.GUIManager = GUIManager()
-        AppManager.instance = self
         self.state = "menu"
+        AppManager.instance = self
 
     def Initialization(self):
         pyray.init_window(AppManager.screenWidth, AppManager.screenHeight, 'Game')
@@ -189,14 +187,9 @@ class GameManager:
                         checksum += 1
                     else:
                         checksum = 0
-        print(checksum)
         if (checksum != 0):
-            AppManager.SwitchState("menu")
-            GUIManager.reInit("you won!")
-
-
-
-
+            AppManager.instance.SwitchState("menu")
+            AppManager.instance.GUIManager.reInit("you won!")
 
     def Update(self):
         self.t += 1
@@ -206,9 +199,6 @@ class GameManager:
         self.score_label.update(str(self.score))
         if (self.score >= 3280):
             self.CheckAllFood()
-
-
-
 
     def ReturnObject(self, x, y):
         return self.mapManager.matrix[y][x].isCollide
@@ -227,7 +217,6 @@ class GameManager:
 
     def FoodCollision(self, PlayerObject):
         self.mapManager.matrixFood[PlayerObject.matrixY()][PlayerObject.matrixX()].onCollision()
-
 
     def boost_player(self):
         self.player_is_boosted = True
@@ -267,6 +256,7 @@ class GUIManager:
     def Update(self):
         self.play_button.update()
         self.quit_button.update()
+
     def reInit(self, new_text):
         if new_text == "you lost!":
             self.welcoming_label = Label(220, 20, new_text)
