@@ -167,7 +167,7 @@ class Player(GameObject, ITextureableObject):
 
     def keyboardPressProcesser(self):
         if (pyray.is_key_pressed(pyray.KeyboardKey.KEY_W)):
-            self.turn(Turn.UP)
+                self.turn(Turn.UP)
         elif (pyray.is_key_pressed(pyray.KeyboardKey.KEY_A)):
             self.turn(Turn.LEFT)
         elif (pyray.is_key_pressed(pyray.KeyboardKey.KEY_S)):
