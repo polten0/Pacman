@@ -72,6 +72,8 @@ class MapManager:
         for food in self.listFoodObjects:
             food.loadContent()
 
+
+
     def Draw(self):
         for mapObject in self.listMapObjects:
             mapObject.draw()
@@ -167,6 +169,8 @@ class GameManager:
 
 
     def LoadContent(self):
+        self.score = 0
+        self.Pacman = Player()
         self.mapManager.loadContent()
         self.Pacman.loadContent()
         self.score_text.loadFont()
