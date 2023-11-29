@@ -176,26 +176,27 @@ class Player(GameObject, ITextureableObject):
             self.turn(Turn.RIGHT)
 
     def turn(self, new_direction):
+            f = GameManager().return_time()
             if (new_direction == Turn.RIGHT and self.matrixX() > 0 and self.matrixX() < 27):
-                if (GameManager().ReturnObject(self.matrixX() + 1, self.matrixY()) == False):
+                if (GameManager().ReturnObject(self.matrixX() + 1, self.matrixY()) == False and f % self.timeMove == 0):
                     self.direction = Turn.RIGHT
                     self.buffer = Turn.NONE
                 else:
                     self.buffer = Turn.RIGHT
             elif (new_direction == Turn.LEFT and self.matrixX() > 0 and self.matrixX() < 27):
-                if (GameManager().ReturnObject(self.matrixX() - 1, self.matrixY()) == False):
+                if (GameManager().ReturnObject(self.matrixX() - 1, self.matrixY()) == False and f % self.timeMove == 0):
                     self.direction = Turn.LEFT
                     self.buffer = Turn.NONE
                 else:
                     self.buffer = Turn.LEFT
             elif (new_direction == Turn.UP):
-                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() - 1) == False):
+                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() - 1) == False and f % self.timeMove == 0):
                     self.direction = Turn.UP
                     self.buffer = Turn.NONE
                 else:
                     self.buffer = Turn.UP
             elif (new_direction == Turn.DOWN):
-                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() + 1) == False):
+                if (GameManager().ReturnObject(self.matrixX(), self.matrixY() + 1) == False and f % self.timeMove == 0):
                     self.direction = Turn.DOWN
                     self.buffer = Turn.NONE
                 else:
