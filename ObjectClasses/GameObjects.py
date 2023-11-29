@@ -22,11 +22,13 @@ class Player(GameObject, ITextureableObject):
     def __init__(self):
         super().__init__()
         self.speed = 1
+        self.alive = True
         self.direction = Turn.RIGHT
         self.buffer = Turn.NONE
         self.timeMove = 10
         self.lives = 3
         self.animator = Animator()
+        self.deathAnimator = Animator()
         self.elapsedDist = 0
 
     def loadContent(self):
@@ -36,17 +38,19 @@ class Player(GameObject, ITextureableObject):
         moveLeft = pyray.load_texture(path + "PacmanMoveLeft.png")
         moveUp = pyray.load_texture(path + "PacmanMoveUp.png")
         moveDown = pyray.load_texture(path + "PacmanMoveDown.png")
+        death = pyray.load_texture(path + "PacmanDeath.png")
 
         self.animator.addAnimation(moveRight, 2, 0.5, True, "MoveRight")
         self.animator.addAnimation(moveLeft, 2, 0.5, True, "MoveLeft")
         self.animator.addAnimation(moveUp, 2, 0.5, True, "MoveUp")
         self.animator.addAnimation(moveDown, 2, 0.5, True, "MoveDown")
-
+        self.deathAnimator.addAnimation(death, 11, 1, False, "Death")
         self.listTextures = {
             "MoveRight": moveRight,
             "MoveLeft": moveLeft,
             "MoveUp": moveUp,
             "MoveDown": moveDown,
+            "Death": death,
         }
 
         self.listDirections = {
@@ -58,41 +62,59 @@ class Player(GameObject, ITextureableObject):
         }
 
     def draw(self):
-        if self.direction == Turn.RIGHT:
-            name = "MoveRight"
-            self.lastDirection = name
-        elif self.direction == Turn.LEFT:
-            name = "MoveLeft"
-            self.lastDirection = name
-        elif self.direction == Turn.UP:
-            name = "MoveUp"
-            self.lastDirection = name
-        elif self.direction == Turn.DOWN:
-            name = "MoveDown"
-            self.lastDirection = name
-        elif self.direction == Turn.NONE:
-            name = self.lastDirection
+        if(self.alive):
+            if self.direction == Turn.RIGHT:
+                name = "MoveRight"
+                self.lastDirection = name
+            elif self.direction == Turn.LEFT:
+                name = "MoveLeft"
+                self.lastDirection = name
+            elif self.direction == Turn.UP:
+                name = "MoveUp"
+                self.lastDirection = name
+            elif self.direction == Turn.DOWN:
+                name = "MoveDown"
+                self.lastDirection = name
+            elif self.direction == Turn.NONE:
+                name = self.lastDirection
 
-        vecDir = self.listDirections[name]
-        if self.direction == Turn.NONE:
-            vecDir = self.listDirections["None"]
+            vecDir = self.listDirections[name]
+            if self.direction == Turn.NONE:
+                vecDir = self.listDirections["None"]
 
-        scale = GameManager().scale
-        texture = self.listTextures[name]
-        sourceRectangle = self.animator.getSourceRectangle(name)
+            scale = GameManager().scale
+            texture = self.listTextures[name]
+            sourceRectangle = self.animator.getSourceRectangle(name)
 
-        width = sourceRectangle.width
-        height = sourceRectangle.height
-        t = GameManager().return_time()
+            width = sourceRectangle.width
+            height = sourceRectangle.height
+            t = GameManager().return_time()
 
-        destinationRectangle = pyray.Rectangle(self.matrixX() * width * scale / 2 - width * scale / 4 + self.elapsedDist * vecDir.x,
-                                               self.matrixY() * height * scale / 2 - height * scale / 4 + self.elapsedDist * vecDir.y + AppCore.Managers.AppManager.upspace,
-                                               width * scale, height * scale)
+            destinationRectangle = pyray.Rectangle(self.matrixX() * width * scale / 2 - width * scale / 4 + self.elapsedDist * vecDir.x,
+                                                   self.matrixY() * height * scale / 2 - height * scale / 4 + self.elapsedDist * vecDir.y + AppCore.Managers.AppManager.upspace,
+                                                   width * scale, height * scale)
 
-        pyray.draw_texture_pro(texture, sourceRectangle, destinationRectangle, pyray.Vector2(0, 0), 0, pyray.WHITE)
-        # pyray.draw_rectangle_lines_ex(destinationRectangle, 1, pyray.RED)
+            pyray.draw_texture_pro(texture, sourceRectangle, destinationRectangle, pyray.Vector2(0, 0), 0, pyray.WHITE)
+            # pyray.draw_rectangle_lines_ex(destinationRectangle, 1, pyray.RED)
 
-        self.elapsedDist += width * scale * (1/self.timeMove) / 2
+            self.elapsedDist += width * scale * (1/self.timeMove) / 2
+        else:
+            name = "Death"
+            scale = GameManager().scale
+            texture = self.listTextures[name]
+            sourceRectangle = self.deathAnimator.getSourceRectangle(name)
+
+            width = sourceRectangle.width
+            height = sourceRectangle.height
+            t = GameManager().return_time()
+
+            destinationRectangle = pyray.Rectangle(
+                self.matrixX() * width * scale / 2 - width * scale / 4,
+                self.matrixY() * height * scale / 2 - height * scale / 4 + AppCore.Managers.AppManager.upspace,
+                width * scale, height * scale)
+
+            pyray.draw_texture_pro(texture, sourceRectangle, destinationRectangle, pyray.Vector2(0, 0), 0, pyray.WHITE)
+
 
 
 
@@ -133,7 +155,8 @@ class Player(GameObject, ITextureableObject):
     def Death(self):
         self.lives -= 1
         if (self.lives <= 0):
-            GameManager().gameOver()
+            self.alive = False
+
 
     def move(self):
         if (self.direction != Turn.NONE):
@@ -204,17 +227,21 @@ class Player(GameObject, ITextureableObject):
 
 
     def update(self):
-        f = GameManager().return_time()
-        if (f % self.timeMove == 0):
-            self.move()
-            self.checkBuffer()
-            self.elapsedDist = 0
-        if not self.direction == Turn.NONE:
-            self.animator.updateRectangles()
-        self.WallCollisionCheck()
-        self.FoodCollisionCheck()
-        self.keyboardPressProcesser()
-
+        if(self.alive):
+            f = GameManager().return_time()
+            if (f % self.timeMove == 0):
+                self.move()
+                self.checkBuffer()
+                self.elapsedDist = 0
+            if not self.direction == Turn.NONE:
+                self.animator.updateRectangles()
+            self.WallCollisionCheck()
+            self.FoodCollisionCheck()
+            self.keyboardPressProcesser()
+        else:
+            self.deathAnimator.updateRectangles()
+            if (self.lives <= 0):
+                GameManager().gameOver()
 
 
 
