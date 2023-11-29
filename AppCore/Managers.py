@@ -1,7 +1,7 @@
 import pyray
 import vec
 
-from ObjectClasses.GameObjects import Player, Food, BigFood, RedGhost
+from ObjectClasses.GameObjects import Player, Food, BigFood, RedGhost,PinkGhost
 from ObjectClasses.Objects import GameObject
 from ObjectClasses.MapObjects import Wall, Floor
 from ObjectClasses.UIObjects import Label
@@ -146,6 +146,9 @@ class GameManager:
         ghost = RedGhost()
         ghost.matrixPosition = vec.Vector2(15, 8)
         self.ghosts.append(ghost)
+        ghost = PinkGhost()
+        ghost.matrixPosition = vec.Vector2(16, 8)
+        self.ghosts.append(ghost)
 
     def Draw(self):
         self.score_text.draw()
@@ -204,6 +207,8 @@ class GameManager:
 
     def getPlayerPos(self):
         return self.Pacman.matrixPosition
+    def getPlayerDirection(self):
+        return self.Pacman.direction
 
     def findShortestPath(self, matrixStart, matrixEnd):
         width = len(self.mapManager.matrix[0])

@@ -277,7 +277,57 @@ class RedGhost(Ghost):
 
     def getPath(self):
         self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+class PinkGhost(Ghost):
+    def init(self):
+        super().init()
 
+    def draw(self):
+        if not self.Timeout:
+            pyray.draw_rectangle(self.matrixX() * 8 * GameManager().scale, self.matrixY() * 8 * GameManager().scale + AppCore.Managers.AppManager.upspace,
+                                24, 24, pyray.PINK)
+
+    # 28 30
+    def getPath(self):
+        Pos=GameManager().getPlayerPos()
+
+        if(GameManager().getPlayerDirection()==Turn.RIGHT):
+            if Pos.x<23:
+                if GameManager().ReturnObject(Pos.x + 3, Pos.y)==False:
+
+                    Pos = vec.Vector2(Pos.x + 3, Pos.y)
+                    self.path = GameManager().findShortestPath(self.matrixPosition,Pos)
+                else:
+                    self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+            else:
+                self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+        if (GameManager().getPlayerDirection() == Turn.LEFT):
+            if Pos.x >5 :
+                if GameManager().ReturnObject(Pos.x - 3, Pos.y)==False:
+                    Pos = vec.Vector2(Pos.x - 3, Pos.y)
+                    self.path = GameManager().findShortestPath(self.matrixPosition, Pos)
+                else:
+                    self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+            else:
+                self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+
+        if (GameManager().getPlayerDirection() == Turn.UP):
+            if Pos.y >5:
+                if GameManager().ReturnObject(Pos.x , Pos.y-3)==False:
+                    Pos = vec.Vector2(Pos.x , Pos.y-3)
+                    self.path = GameManager().findShortestPath(self.matrixPosition, Pos)
+                else:
+                    self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+            else:
+                self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+        if (GameManager().getPlayerDirection() == Turn.DOWN):
+            if Pos.y <25:
+                if GameManager().ReturnObject(Pos.x , Pos.y+3)==False:
+                    Pos = vec.Vector2(Pos.x , Pos.y+3)
+                    self.path = GameManager().findShortestPath(self.matrixPosition, Pos)
+                else:
+                    self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+            else:
+                self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
 class Food(GameObject, ITextureableObject):
     def __init__(self):
         super().__init__()
