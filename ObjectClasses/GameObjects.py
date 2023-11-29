@@ -115,11 +115,12 @@ class Player(GameObject, ITextureableObject):
 
 
     def WallCollisionCheck(self):
+        print(self.matrixX())
         if (self.direction != Turn.NONE):
-            if (self.direction == Turn.RIGHT):
+            if (self.direction == Turn.RIGHT and self.matrixX() < 27 and self.matrixX() > 0):
                 if (GameManager().ReturnObject(self.matrixX() + 1, self.matrixY()) == True):
                     self.direction = Turn.NONE
-            elif (self.direction == Turn.LEFT):
+            elif (self.direction == Turn.LEFT and self.matrixX() > 0 and self.matrixX() < 27):
                 if (GameManager().ReturnObject(self.matrixX() - 1, self.matrixY()) == True):
                     self.direction = Turn.NONE
             elif (self.direction == Turn.UP):
@@ -138,11 +139,11 @@ class Player(GameObject, ITextureableObject):
         if (self.direction != Turn.NONE):
             if (self.direction == Turn.RIGHT):
                     self.setmatrixX(self.matrixX() + self.speed)
-                    if (self.matrixX() > 26):
+                    if (self.matrixX() > 27):
                         self.setmatrixX(0)
             elif (self.direction == Turn.LEFT):
                     self.setmatrixX(self.matrixX() - self.speed)
-                    if (self.matrixX() == 0):
+                    if (self.matrixX() < 0):
                         self.setmatrixX(27)
             elif (self.direction == Turn.UP):
                     self.setmatrixY(self.matrixY() - self.speed)
@@ -175,13 +176,13 @@ class Player(GameObject, ITextureableObject):
             self.turn(Turn.RIGHT)
 
     def turn(self, new_direction):
-            if (new_direction == Turn.RIGHT):
+            if (new_direction == Turn.RIGHT and self.matrixX() > 0 and self.matrixX() < 27):
                 if (GameManager().ReturnObject(self.matrixX() + 1, self.matrixY()) == False):
                     self.direction = Turn.RIGHT
                     self.buffer = Turn.NONE
                 else:
                     self.buffer = Turn.RIGHT
-            elif (new_direction == Turn.LEFT):
+            elif (new_direction == Turn.LEFT and self.matrixX() > 0 and self.matrixX() < 27):
                 if (GameManager().ReturnObject(self.matrixX() - 1, self.matrixY()) == False):
                     self.direction = Turn.LEFT
                     self.buffer = Turn.NONE
@@ -203,7 +204,9 @@ class Player(GameObject, ITextureableObject):
 
     def update(self):
         f = GameManager().return_time()
-
+        if (f % self.timeMove == 0):
+            self.move()
+            self.elapsedDist = 0
         if not self.direction == Turn.NONE:
             self.animator.updateRectangles()
         self.WallCollisionCheck()
@@ -211,9 +214,7 @@ class Player(GameObject, ITextureableObject):
         self.keyboardPressProcesser()
         self.checkBuffer()
 
-        if (f % self.timeMove == 0):
-            self.move()
-            self.elapsedDist = 0
+
 
 
 
