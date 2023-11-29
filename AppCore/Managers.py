@@ -180,13 +180,35 @@ class GameManager:
         self.score_text.loadFont()
         self.score_label.loadFont()
 
+    def CheckAllFood(self):
+        checksum = 0
+        for gameObjects in self.mapManager.matrixFood:
+            for Foods in gameObjects:
+                if (isinstance(Foods, Food)):
+                    if not (Foods.active):
+                        checksum += 1
+                    else:
+                        checksum = 0
+        print(checksum)
+        if (checksum != 0):
+            AppManager.SwitchState("menu")
+            GUIManager.reInit("you won!")
+
+
+
+
+
     def Update(self):
         self.t += 1
         for gameObject in self.listGameObjects:
             gameObject.update()
         self.Pacman.update()
         self.score_label.update(str(self.score))
-        print(pyray.get_frame_time() * 60)
+        if (self.score >= 3280):
+            self.CheckAllFood()
+
+
+
 
     def ReturnObject(self, x, y):
         return self.mapManager.matrix[y][x].isCollide
@@ -233,6 +255,9 @@ class GUIManager:
         if welcome_text == "you lost!":
             self.welcoming_label = Label(220, 20, welcome_text)
 
+        if welcome_text == "you won!":
+            self.welcoming_label = Label(220, 2, welcome_text)
+
 
     def LoadContent(self):
         self.welcoming_label.loadFont()
@@ -242,7 +267,14 @@ class GUIManager:
     def Update(self):
         self.play_button.update()
         self.quit_button.update()
+    def reInit(self, new_text):
+        if new_text == "you lost!":
+            self.welcoming_label = Label(220, 20, new_text)
 
+        if new_text == "you won!":
+            self.welcoming_label = Label(220, 2, new_text)
+
+        self.LoadContent()
     def Draw(self):
         self.welcoming_label.draw()
         self.play_button.draw()
