@@ -32,6 +32,7 @@ class AppManager:
 
     def SwitchState(self, state):
         if (state == "game"):
+            self.gameManager = GameManager()
             self.gameManager.LoadContent()
         elif (state == "menu"):
             self.GUIManager.LoadContent()
@@ -41,7 +42,6 @@ class AppManager:
     def Update(self):
         if (self.state == "menu"):
             self.GUIManager.Update()
-
         if (self.state == "game"):
             self.gameManager.Update()
 
@@ -171,14 +171,6 @@ class GameManager:
         ghost.reset()
         self.ghosts.append(ghost)
 
-    def Draw(self):
-        self.score_text.draw()
-        self.score_label.draw()
-        self.mapManager.Draw()
-
-        for ghost in self.ghosts:
-            ghost.draw()
-        self.Pacman.draw()
 
     def LoadContent(self):
         self.score = 0
@@ -191,16 +183,24 @@ class GameManager:
         for ghost in self.ghosts:
             ghost.loadContent()
 
+    def Draw(self):
+        self.score_text.draw()
+        self.score_label.draw()
+        self.mapManager.Draw()
+
+        for ghost in self.ghosts:
+            ghost.draw()
+        self.Pacman.draw()
+
+
     def CheckAllFood(self):
-        checksum = 0
+        j = True
         for gameObjects in self.mapManager.matrixFood:
-            for Foods in gameObjects:
-                if (isinstance(Foods, Food)):
-                    if not (Foods.active):
-                        checksum += 1
-                    else:
-                        checksum = 0
-        if (checksum != 0):
+            for obj in gameObjects:
+                if isinstance(obj, Food):
+                    if obj.active:
+                        j = False
+        if (j):
             AppManager.instance.SwitchState("menu")
             AppManager.instance.GUIManager.reInit("you won!")
 
@@ -211,6 +211,14 @@ class GameManager:
     def enableAllGhosts(self):
         for i in self.ghosts:
             i.disable = False
+
+    def FrightAllGhosts(self):
+        for i in self.ghosts:
+            i.Frightened = True
+
+    def deFrightAllGhosts(self):
+        for i in self.ghosts:
+            i.Frightened = False
 
     def resetGhosts(self):
         for ghost in self.ghosts:
@@ -234,8 +242,8 @@ class GameManager:
                         self.resetGhosts()
 
         self.score_label.update(str(self.score))
-        if (self.score >= 3280):
-            self.CheckAllFood()
+        self.CheckAllFood()
+
 
     def ReturnObject(self, x, y):
         return self.mapManager.matrix[y][x].isCollide
@@ -261,6 +269,7 @@ class GameManager:
 
     def getPlayerPos(self):
         return self.Pacman.matrixPosition
+
     def getPlayerDirection(self):
         return self.Pacman.direction
 

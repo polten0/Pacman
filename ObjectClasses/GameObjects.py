@@ -2,6 +2,7 @@ import os
 import pyray
 import vec
 import AppCore.Managers
+import random
 from ObjectClasses.Objects import GameObject
 from AppCore.Animator import Animator
 from AppCore.Interfaces import ITextureableObject
@@ -22,7 +23,7 @@ class Player(GameObject, ITextureableObject):
         super().__init__()
         self.direction = Turn.RIGHT
         self.buffer = Turn.NONE
-        self.timeMove = 10
+
         self.lives = 3
         self.animator = Animator()
         self.elapsedDist = 0
@@ -32,6 +33,10 @@ class Player(GameObject, ITextureableObject):
 
         self.isBoosted = False
         self.isActive = True
+
+        self.t = 0
+        self.timeMove = 10
+        self.timeBoost = 600
 
     def loadContent(self):
         path = os.getcwd() + "/Content/"
@@ -222,6 +227,11 @@ class Player(GameObject, ITextureableObject):
             self.WallCollisionCheck()
             self.FoodCollisionCheck()
             self.keyboardPressProcesser()
+            if self.isBoosted:
+                self.t += 1
+                if self.t % self.timeBoost == 0:
+                    self.isBoosted = False
+                    t = 0
         else:
             self.animator.updateRectangles()
             if len(self.animator.animations) == 4:
@@ -232,6 +242,7 @@ class Player(GameObject, ITextureableObject):
                     self.reset()
                     GameManager().enableAllGhosts()
                     GameManager().resetTime()
+
     def reset(self):
         self.matrixPosition = vec.Vector2(13, 23)
 
@@ -318,6 +329,7 @@ class Ghost(GameObject, ITextureableObject):
     def Death(self):
         self.Frightened = False
         self.Timeout = True
+        self.reset()
 
     def move(self):
         if self.path != None:
@@ -355,7 +367,6 @@ class Ghost(GameObject, ITextureableObject):
             if not self.Timeout:
                 if time % self.timePath == 0:
                     self.getPath()
-
                 if time % self.timeMove == 0:
                     self.move()
                     self.elapsedDist = 0
@@ -377,17 +388,19 @@ class RedGhost(Ghost):
     def getPath(self):
         self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
 
+        super().getPath()
+
 class PinkGhost(Ghost):
     def __init__(self):
         super().__init__()
         self.gName = "Pink"
         self.timePath = 30
         self.timeLock = 600
+
     def reset(self):
         self.matrixPosition = vec.Vector2(15, 14)
         super().reset()
 
-    # 28 30
     def getPath(self):
         Pos=GameManager().getPlayerPos()
 
@@ -423,6 +436,8 @@ class PinkGhost(Ghost):
                         return
             self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
 
+        super().getPath()
+
 class Food(GameObject, ITextureableObject):
     def __init__(self):
         super().__init__()
@@ -449,6 +464,12 @@ class BigFood(Food):
 
     def loadContent(self):
         self.texture = pyray.load_texture(f'{os.getcwd()}/Content/BigFood.png')
+
+    def onCollision(self):
+        if self.active:
+            GameManager().boost_player()
+            GameManager().FrightAllGhosts()
+            self.active = False
 
     def draw(self):
         if self.active:
