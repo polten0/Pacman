@@ -261,7 +261,7 @@ class GameManager:
 
 
     def ReturnObject(self, x, y):
-        return self.mapManager.matrix[y][x].isCollide
+        return self.mapManager.matrix[int(y)][int(x)].isCollide
 
     def ReturnFood(self, x, y):
         if(isinstance(self.mapManager.matrixFood[y][x], Food)):
@@ -272,6 +272,7 @@ class GameManager:
 
     def boost_player(self):
         self.Pacman.isBoosted = True
+        self.FrightAllGhosts()
 
     def gameOver(self):
         pass

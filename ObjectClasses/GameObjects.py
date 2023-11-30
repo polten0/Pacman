@@ -335,6 +335,13 @@ class Ghost(GameObject, ITextureableObject):
         self.path = None
         self.reset()
 
+    def Fear(self):
+        randomPoint = vec.Vector2(0, 0)
+        print(randomPoint)
+        while (GameManager().ReturnObject(randomPoint.x, randomPoint.y)):
+            randomPoint = vec.Vector2(random.randint(0,25), random.randint(0, 25))
+        self.path = GameManager().findShortestPath(self.matrixPosition, randomPoint)
+
     def move(self):
         if self.path != None:
             if len(self.path) != 0:
@@ -365,20 +372,25 @@ class Ghost(GameObject, ITextureableObject):
 
     def update(self):
         time = GameManager().return_time()
-
+        print(self.Frightened)
         if not self.disable:
             self.movAnimator.updateRectangles()
-            if not self.Timeout:
-                if time % self.timePath == 0:
-                    self.getPath()
-                if time % self.timeMove == 0:
-                    self.move()
-                    self.elapsedDist = 0
-            else:
-                if self.t // self.timeLock == 1:
-                    self.Timeout = False
-                    self.spawn()
-                self.t += 1
+            if not self.Frightened:
+                if not self.Timeout:
+                    if time % self.timePath == 0:
+                        self.getPath()
+                    if time % self.timeMove == 0:
+                        self.move()
+                        self.elapsedDist = 0
+                elif self.Timeout:
+                    if self.t // self.timeLock == 1:
+                        self.Timeout = False
+                        self.spawn()
+                    self.t += 1
+            elif self.Frightened:
+                self.Fear()
+                if (self.path == None):
+                    self.Fear()
 
 
 class RedGhost(Ghost):
@@ -392,7 +404,6 @@ class RedGhost(Ghost):
 
     def getPath(self):
         self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
-        print(len(self.path))
         super().getPath()
 
 class PinkGhost(Ghost):
