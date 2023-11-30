@@ -268,6 +268,7 @@ class Ghost(GameObject, ITextureableObject):
         self.timeMove = 15
         self.timePath = 60
         self.timeLock = 200
+        self.timeFear = 200
 
 
 
@@ -387,10 +388,16 @@ class Ghost(GameObject, ITextureableObject):
                         self.Timeout = False
                         self.spawn()
                     self.t += 1
+
             elif self.Frightened:
                 self.Fear()
                 if (self.path == None):
                     self.Fear()
+                if time % self.timeMove == 0:
+                    self.move()
+                    self.elapsedDist = 0
+                if time // self.timeFear == 0:
+                    GameManager().deFrightAllGhosts()
 
 
 class RedGhost(Ghost):
