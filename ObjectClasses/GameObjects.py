@@ -127,6 +127,8 @@ class Player(GameObject, ITextureableObject):
     def Death(self):
         self.lives -= 1
         self.isActive = False
+        self.direction = Turn.RIGHT
+        self.buffer = Turn.NONE
         self.animator.addAnimation(self.listTextures["Death"], 11, 2, False, "Death")
 
     def FoodCollisionCheck(self):
@@ -265,7 +267,7 @@ class Ghost(GameObject, ITextureableObject):
         self.t = 0
         self.timeMove = 15
         self.timePath = 60
-        self.timeLock = 300
+        self.timeLock = 200
 
 
 
@@ -396,7 +398,7 @@ class PinkGhost(Ghost):
         super().__init__()
         self.gName = "Pink"
         self.timePath = 30
-        self.timeLock = 600
+        self.timeLock = 400
 
     def reset(self):
         self.matrixPosition = vec.Vector2(15, 14)
@@ -409,7 +411,7 @@ class PinkGhost(Ghost):
             if Pos.x <= 22:
                 for i in range(1, 5, -1):
                     if not GameManager().ReturnObject(Pos.x + i, Pos.y):
-                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x + i, Pos.y))
+                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x + i, Pos.y - i))
                         return
             self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
 
@@ -417,7 +419,7 @@ class PinkGhost(Ghost):
             if Pos.x >= 5:
                 for i in range(1, 5, -1):
                     if not GameManager().ReturnObject(Pos.x - i, Pos.y):
-                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x - i, Pos.y))
+                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x - i, Pos.y - i))
                         return
             self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
 
@@ -425,7 +427,7 @@ class PinkGhost(Ghost):
             if Pos.y >= 5:
                 for i in range(1, 5, -1):
                     if not GameManager().ReturnObject(Pos.x , Pos.y - i):
-                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x, Pos.y - i))
+                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x - i, Pos.y - i))
                         return
             self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
 
@@ -433,7 +435,7 @@ class PinkGhost(Ghost):
             if Pos.y <= 25:
                 for i in range(1, 5, -1):
                     if not GameManager().ReturnObject(Pos.x, Pos.y + i):
-                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x, Pos.y + i))
+                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x + i, Pos.y + i))
                         return
             self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
 
