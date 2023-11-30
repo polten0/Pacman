@@ -221,7 +221,8 @@ class Ghost(GameObject, ITextureableObject):
         self.listTextures = None
         self.dir = vec.Vector2(0, 0)
         self.gName = ""
-        self.timeMove = 10
+        self.timeMove = 15
+        self.timePath = 60
 
 
     def loadContent(self):
@@ -338,7 +339,7 @@ class Ghost(GameObject, ITextureableObject):
         time = GameManager().return_time()
 
         self.movAnimator.updateRectangles()
-        if time % 60 == 0:
+        if time % self.timePath == 0:
             self.getPath()
 
         if time % self.timeMove == 0:
@@ -352,14 +353,12 @@ class RedGhost(Ghost):
 
     def getPath(self):
         self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+
 class PinkGhost(Ghost):
     def __init__(self):
         super().__init__()
-
-    def draw(self):
-        if not self.Timeout:
-            pyray.draw_rectangle(self.matrixX() * 8 * GameManager().scale, self.matrixY() * 8 * GameManager().scale + AppCore.Managers.AppManager.upspace,
-                                24, 24, pyray.PINK)
+        self.gName = "Pink"
+        self.timePath = 30
 
     # 28 30
     def getPath(self):
@@ -396,6 +395,7 @@ class PinkGhost(Ghost):
                         self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x, Pos.y + i))
                         return
             self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+
 class Food(GameObject, ITextureableObject):
     def __init__(self):
         super().__init__()
