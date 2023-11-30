@@ -4,7 +4,7 @@ import vec
 from ObjectClasses.GameObjects import Player, Food, BigFood, RedGhost,PinkGhost
 from ObjectClasses.Objects import GameObject
 from ObjectClasses.MapObjects import Wall, Floor
-from ObjectClasses.UIObjects import Label
+from ObjectClasses.UIObjects import Label, Button
 import json
 import os
 
@@ -22,20 +22,38 @@ class AppManager:
 
     def __init__(self):
         self.gameManager = GameManager()
+        self.GUIManager = GUIManager()
+        self.state = "menu"
         AppManager.instance = self
 
     def Initialization(self):
         pyray.init_window(AppManager.screenWidth, AppManager.screenHeight, 'Game')
-        self.gameManager.LoadContent()
+        self.GUIManager.LoadContent()
+
+    def SwitchState(self, state):
+        if (state == "game"):
+            self.gameManager.LoadContent()
+        elif (state == "menu"):
+            self.GUIManager.LoadContent()
+        self.state = state
+
 
     def Update(self):
-        self.gameManager.Update()
+        if (self.state == "menu"):
+            self.GUIManager.Update()
+
+        if (self.state == "game"):
+            self.gameManager.Update()
 
     def Draw(self):
         pyray.clear_background(pyray.BLACK)
         pyray.begin_drawing()
 
-        self.gameManager.Draw()
+        if (self.state == "game"):
+            self.gameManager.Draw()
+
+        elif (self.state == "menu"):
+            self.GUIManager.Draw()
 
         pyray.end_drawing()
 
@@ -53,6 +71,8 @@ class MapManager:
 
         for food in self.listFoodObjects:
             food.loadContent()
+
+
 
     def Draw(self):
         for mapObject in self.listMapObjects:
@@ -160,13 +180,25 @@ class GameManager:
         self.Pacman.draw()
 
     def LoadContent(self):
+        self.score = 0
+        self.Pacman = Player()
         self.mapManager.loadContent()
         self.Pacman.loadContent()
         self.score_text.loadFont()
         self.score_label.loadFont()
 
-        for ghost in self.ghosts:
-            ghost.loadContent()
+    def CheckAllFood(self):
+        checksum = 0
+        for gameObjects in self.mapManager.matrixFood:
+            for Foods in gameObjects:
+                if (isinstance(Foods, Food)):
+                    if not (Foods.active):
+                        checksum += 1
+                    else:
+                        checksum = 0
+        if (checksum != 0):
+            AppManager.instance.SwitchState("menu")
+            AppManager.instance.GUIManager.reInit("you won!")
 
     def Update(self):
         self.t += 1
@@ -177,6 +209,8 @@ class GameManager:
             ghost.update()
 
         self.score_label.update(str(self.score))
+        if (self.score >= 3280):
+            self.CheckAllFood()
 
     def ReturnObject(self, x, y):
         return self.mapManager.matrix[y][x].isCollide
@@ -198,6 +232,9 @@ class GameManager:
 
     def boost_player(self):
         self.player_is_boosted = True
+
+    def gameOver(self):
+        pass
 
     def addScore(self, scoreObject):
         if (isinstance(scoreObject, Food)):
@@ -368,11 +405,38 @@ class GameManager:
         return self.t
 
 class GUIManager:
-    def __init__(self):
-        pass
+    def __init__(self, welcome_text="welcome to pac-man!"):
+        self.instance = self
+        self.welcoming_label = Label(70, 20, welcome_text)
+        self.play_button = Button(274, 375, "play", False)
+        self.quit_button = Button(274, 475)
+        self.score_label = Label(318, 800, '0')
+
+        if welcome_text == "you lost!":
+            self.welcoming_label = Label(220, 20, welcome_text)
+
+        if welcome_text == "you won!":
+            self.welcoming_label = Label(220, 2, welcome_text)
+
+
+    def LoadContent(self):
+        self.welcoming_label.loadFont()
+        self.play_button.Label.loadFont()
+        self.quit_button.Label.loadFont()
 
     def Update(self):
-        pass
+        self.play_button.update()
+        self.quit_button.update()
 
+    def reInit(self, new_text):
+        if new_text == "you lost!":
+            self.welcoming_label = Label(220, 20, new_text)
+
+        if new_text == "you won!":
+            self.welcoming_label = Label(220, 20, new_text)
+
+        self.LoadContent()
     def Draw(self):
-        pass
+        self.welcoming_label.draw()
+        self.play_button.draw()
+        self.quit_button.draw()
