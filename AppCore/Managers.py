@@ -158,8 +158,11 @@ class GameManager:
         self.scale = 3
         self.t = 0
 
-        self.score_text = Label(10, 30, "SCORE:")
-        self.score_label = Label(220, 30, str(self.score))
+        self.score_text = Label(10, 10, "SCORE:")
+        self.score_label = Label(220, 10, str(self.score))
+        self.lives_text = Label(10, 900, "LIVES:")
+        self.lives_label = Label(220, 900, str(self.Pacman.lives))
+        self.boosted_text = Label(430, 900, "boosted!")
 
         self.ghosts = []
 
@@ -179,18 +182,23 @@ class GameManager:
         self.Pacman.loadContent()
         self.score_text.loadFont()
         self.score_label.loadFont()
-
+        self.lives_text.loadFont()
+        self.lives_label.loadFont()
+        self.boosted_text.loadFont()
         for ghost in self.ghosts:
             ghost.loadContent()
 
     def Draw(self):
         self.score_text.draw()
         self.score_label.draw()
+        self.lives_text.draw()
+        self.lives_label.draw()
         self.mapManager.Draw()
-
         for ghost in self.ghosts:
             ghost.draw()
         self.Pacman.draw()
+        if (self.Pacman.isBoosted):
+            self.boosted_text.draw()
 
 
     def CheckAllFood(self):
@@ -227,6 +235,8 @@ class GameManager:
     def resetTime(self):
         t = 0
 
+
+
     def Update(self):
         self.t += 1
         self.Pacman.update()
@@ -242,6 +252,7 @@ class GameManager:
                         self.resetGhosts()
 
         self.score_label.update(str(self.score))
+        self.lives_label.update(str(self.Pacman.lives))
         self.CheckAllFood()
 
 
