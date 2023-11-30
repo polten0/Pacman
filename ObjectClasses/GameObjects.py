@@ -230,6 +230,8 @@ class Player(GameObject, ITextureableObject):
                 else:
                     self.isActive = True
                     self.reset()
+                    GameManager().enableAllGhosts()
+                    GameManager().resetTime()
     def reset(self):
         self.matrixPosition = vec.Vector2(13, 23)
 
@@ -247,6 +249,8 @@ class Ghost(GameObject, ITextureableObject):
         self.listTextures = None
         self.dir = vec.Vector2(0, 0)
         self.gName = ""
+
+        self.t = 0
         self.timeMove = 15
         self.timePath = 60
         self.timeLock = 300
@@ -288,6 +292,9 @@ class Ghost(GameObject, ITextureableObject):
                 name = "Up"
             elif self.dir.y == 1:
                 name = "Down"
+
+            if self.Timeout:
+                self.dir = vec.Vector2(0, 0)
 
             scale = GameManager().scale
             texture = self.listTextures[name]
@@ -334,18 +341,29 @@ class Ghost(GameObject, ITextureableObject):
         self.destinationRectangle = pyray.Rectangle(self.matrixX() * 16 * 3 / 2 - 16 * 3 / 4,
                                                     self.matrixY() * 16 * 3 / 2 - 16 * 3 / 4 + AppCore.Managers.AppManager.upspace,
                                                     16 * 3, 16 * 3)
+        self.Timeout = True
+        self.t = 0
+
+    def spawn(self):
+        self.matrixPosition = vec.Vector2(13, 11)
 
     def update(self):
         time = GameManager().return_time()
 
         if not self.disable:
             self.movAnimator.updateRectangles()
-            if time % self.timePath == 0:
-                self.getPath()
+            if not self.Timeout:
+                if time % self.timePath == 0:
+                    self.getPath()
 
-            if time % self.timeMove == 0:
-                self.move()
-                self.elapsedDist = 0
+                if time % self.timeMove == 0:
+                    self.move()
+                    self.elapsedDist = 0
+            else:
+                if self.t // self.timeLock == 1:
+                    self.Timeout = False
+                    self.spawn()
+                self.t += 1
 
 class RedGhost(Ghost):
     def __init__(self):
@@ -364,6 +382,7 @@ class PinkGhost(Ghost):
         super().__init__()
         self.gName = "Pink"
         self.timePath = 30
+        self.timeLock = 600
     def reset(self):
         self.matrixPosition = vec.Vector2(15, 14)
         super().reset()

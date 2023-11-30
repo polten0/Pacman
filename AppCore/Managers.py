@@ -164,11 +164,11 @@ class GameManager:
         self.ghosts = []
 
         ghost = RedGhost()
-        ghost.matrixPosition = vec.Vector2(15, 8)
+        ghost.reset()
         self.ghosts.append(ghost)
 
         ghost = PinkGhost()
-        ghost.matrixPosition = vec.Vector2(16, 8)
+        ghost.reset()
         self.ghosts.append(ghost)
 
     def Draw(self):
@@ -208,9 +208,16 @@ class GameManager:
         for i in self.ghosts:
             i.disable = True
 
+    def enableAllGhosts(self):
+        for i in self.ghosts:
+            i.disable = False
+
     def resetGhosts(self):
         for ghost in self.ghosts:
             ghost.reset()
+
+    def resetTime(self):
+        t = 0
 
     def Update(self):
         self.t += 1
@@ -225,7 +232,6 @@ class GameManager:
                         self.Pacman.Death()
                         self.disableAllGhosts()
                         self.resetGhosts()
-                        self.t = 0
 
         self.score_label.update(str(self.score))
         if (self.score >= 3280):
