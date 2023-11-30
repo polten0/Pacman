@@ -335,13 +335,6 @@ class Ghost(GameObject, ITextureableObject):
         self.path = None
         self.reset()
 
-    def Fear(self):
-        randomPoint = vec.Vector2(0, 0)
-        print(randomPoint)
-        while (GameManager().ReturnObject(randomPoint.x, randomPoint.y)):
-            randomPoint = vec.Vector2(random.randint(0,25), random.randint(0, 25))
-        self.path = GameManager().findShortestPath(self.matrixPosition, randomPoint)
-
     def move(self):
         if self.path != None:
             if len(self.path) != 0:
@@ -372,10 +365,9 @@ class Ghost(GameObject, ITextureableObject):
 
     def update(self):
         time = GameManager().return_time()
-        print(self.Frightened)
+
         if not self.disable:
-            self.movAnimator.updateRectangles()
-            if not self.Frightened:
+                self.movAnimator.updateRectangles()
                 if not self.Timeout:
                     if time % self.timePath == 0:
                         self.getPath()
@@ -387,10 +379,6 @@ class Ghost(GameObject, ITextureableObject):
                         self.Timeout = False
                         self.spawn()
                     self.t += 1
-            elif self.Frightened:
-                self.Fear()
-                if (self.path == None):
-                    self.Fear()
 
 
 class RedGhost(Ghost):

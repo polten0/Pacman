@@ -33,7 +33,7 @@ class Button(UIObject):
         self.Quit = q
         self.X = x
         self.Y = y
-        self.width = 125
+        self.width = 130
         self.height = 50
         self.Label = Label(self.X + 10, self.Y + 5, text)
         if not self.Quit:
