@@ -152,7 +152,6 @@ class MapManager:
 
 class GameManager:
     def __init__(self):
-        self.player_is_boosted = False
         self.score = 0
         self.mapManager = MapManager()
         self.Pacman = Player()
@@ -163,9 +162,11 @@ class GameManager:
         self.score_label = Label(220, 30, str(self.score))
 
         self.ghosts = []
+
         ghost = RedGhost()
         ghost.matrixPosition = vec.Vector2(15, 8)
         self.ghosts.append(ghost)
+
         ghost = PinkGhost()
         ghost.matrixPosition = vec.Vector2(16, 8)
         self.ghosts.append(ghost)
@@ -187,6 +188,9 @@ class GameManager:
         self.score_text.loadFont()
         self.score_label.loadFont()
 
+        for ghost in self.ghosts:
+            ghost.loadContent()
+
     def CheckAllFood(self):
         checksum = 0
         for gameObjects in self.mapManager.matrixFood:
@@ -200,13 +204,28 @@ class GameManager:
             AppManager.instance.SwitchState("menu")
             AppManager.instance.GUIManager.reInit("you won!")
 
+    def disableAllGhosts(self):
+        for i in self.ghosts:
+            i.disable = True
+
+    def resetGhosts(self):
+        for ghost in self.ghosts:
+            ghost.reset()
+
     def Update(self):
         self.t += 1
-
         self.Pacman.update()
-
         for ghost in self.ghosts:
             ghost.update()
+            if pyray.check_collision_recs(ghost.destinationRectangle, self.Pacman.destinationRectangle):
+                if self.Pacman.isBoosted:
+                    ghost.Death()
+                else:
+                    if self.Pacman.isActive:
+                        self.Pacman.Death()
+                        self.disableAllGhosts()
+                        self.resetGhosts()
+                        self.t = 0
 
         self.score_label.update(str(self.score))
         if (self.score >= 3280):
@@ -219,19 +238,11 @@ class GameManager:
         if(isinstance(self.mapManager.matrixFood[y][x], Food)):
             return self.mapManager.matrixFood[y][x].active
 
-    def PrintObject(self, x, y):
-        print(self.mapManager.matrix[y][x])
-
-    def CheckCollision(self, object_a, object_b):
-        if (object_a.matrixX == object_b.matrixX and object_a.matrixY == object_b.matrixY):
-            object_a.OnCollision(object_b)
-            object_b.OnCollision(object_a)
-
     def FoodCollision(self, PlayerObject):
         self.mapManager.matrixFood[PlayerObject.matrixY()][PlayerObject.matrixX()].onCollision()
 
     def boost_player(self):
-        self.player_is_boosted = True
+        self.Pacman.isBoosted = True
 
     def gameOver(self):
         pass
