@@ -1,5 +1,4 @@
 import os
-
 import pyray
 import vec
 import AppCore.Managers
@@ -94,8 +93,6 @@ class Player(GameObject, ITextureableObject):
 
         self.elapsedDist += width * scale * (1/self.timeMove) / 2
 
-
-
     def onCollision(self, collide_object):
         if (isinstance(collide_object, Food)):
             collide_object.onCollision(self)
@@ -108,11 +105,9 @@ class Player(GameObject, ITextureableObject):
             collide_object.onCollision()
             GameManager().boost_player()
 
-
     def FoodCollisionCheck(self):
         if (GameManager().ReturnFood(self.matrixX(), self.matrixY()) == True):
             GameManager().FoodCollision(self)
-
 
     def WallCollisionCheck(self):
         print(self.matrixX())
@@ -218,13 +213,99 @@ class Player(GameObject, ITextureableObject):
 
 
 
-
-
-
-class Ghost(GameObject):
+class Ghost(GameObject, ITextureableObject):
     def __init__(self):
+        super().__init__()
         self.Frightened = False
         self.Timeout = False
+        self.path = None
+
+        self.elapsedDist = 0
+        self.movAnimator = Animator()
+        self.deathAnimator = Animator()
+        self.listTextures = None
+        self.dir = vec.Vector2(0, 0)
+        self.gName = ""
+        self.timeMove = 15
+        self.timePath = 60
+
+
+    def loadContent(self):
+        path = os.getcwd() + "/Content/"
+
+        moveRight = pyray.load_texture(path + f"Ghost{self.gName}MoveRight.png")
+        moveLeft = pyray.load_texture(path + f"Ghost{self.gName}MoveLeft.png")
+        moveUp = pyray.load_texture(path + f"Ghost{self.gName}MoveUp.png")
+        moveDown = pyray.load_texture(path + f"Ghost{self.gName}MoveDown.png")
+
+        self.movAnimator.addAnimation(moveRight, 2, 0.5, True, "Right")
+        self.movAnimator.addAnimation(moveLeft, 2, 0.5, True, "Left")
+        self.movAnimator.addAnimation(moveUp, 2, 0.5, True, "Up")
+        self.movAnimator.addAnimation(moveDown, 2, 0.5, True, "Down")
+
+        self.listTextures = {
+            "Right": moveRight,
+            "Left": moveLeft,
+            "Up": moveUp,
+            "Down": moveDown,
+        }
+
+
+    def draw(self):
+        name = "Right"
+        if self.dir.x == 1:
+            name = "Right"
+        elif self.dir.x == -1:
+            name = "Left"
+        elif self.dir.y == -1:
+            name = "Up"
+        elif self.dir.y == 1:
+            name = "Down"
+
+        scale = GameManager().scale
+        texture = self.listTextures[name]
+
+        sourceRectangle = self.movAnimator.getSourceRectangle(name)
+
+        width = sourceRectangle.width
+        height = sourceRectangle.height
+
+        self.destinationRectangle = pyray.Rectangle(
+            (self.matrixX() - self.dir.x) * width * scale / 2 - width * scale / 4 + self.elapsedDist * self.dir.x,
+            (self.matrixY() - self.dir.y) * height * scale / 2 - height * scale / 4 + self.elapsedDist * self.dir.y + AppCore.Managers.AppManager.upspace,
+            width * scale, height * scale)
+
+        pyray.draw_texture_pro(texture, sourceRectangle, self.destinationRectangle, pyray.Vector2(0, 0), 0, pyray.WHITE)
+
+        self.elapsedDist += width * scale * (1 / self.timeMove) / 2
+        # pyray.draw_rectangle_lines_ex(self.destinationRectangle, 1, pyray.RED)
+
+        """
+        if not self.Timeout:
+            sourceRectangle = self.movAnimator.getSourceRectangle(name)
+
+            width = sourceRectangle.width
+            height = sourceRectangle.height
+
+            self.destinationRectangle = pyray.Rectangle(
+                self.matrixX() * width * scale / 2 - width * scale / 4 + self.elapsedDist * self.dir.x,
+                self.matrixY() * height * scale / 2 - height * scale / 4 + self.elapsedDist * self.dir.y + AppCore.Managers.AppManager.upspace,
+                width * scale, height * scale)
+
+            pyray.draw_texture_pro(texture, sourceRectangle, self.destinationRectangle, pyray.Vector2(0, 0), 0, pyray.WHITE)
+        else:
+            sourceRectangle = self.deathAnimator.getSourceRectangle(name)
+
+            width = sourceRectangle.width
+            height = sourceRectangle.height
+
+            self.destinationRectangle = pyray.Rectangle(
+                self.matrixX() * width * scale / 2 - width * scale / 4,
+                self.matrixY() * height * scale / 2 - height * scale / 4 + AppCore.Managers.AppManager.upspace,
+                width * scale, height * scale)
+
+            pyray.draw_texture_pro(texture, sourceRectangle, self.destinationRectangle, pyray.Vector2(0, 0), 0, pyray.WHITE)
+        """
 
     def onCollision(self, collide_object):
         if (isinstance(collide_object, Player)):
@@ -233,10 +314,92 @@ class Ghost(GameObject):
             else:
                 collide_object.onCollision()
 
+
     def Death(self):
         self.Frightened = False
         self.Timeout = True
+
+
+    def move(self):
+        if self.path != None:
+            if len(self.path) == 0:
+                self.getPath()
+
+            self.dir = self.path[-1]
+
+            self.matrixPosition = vec.Vector2(self.path[-1].x + self.matrixX(), self.matrixY())
+            self.matrixPosition = vec.Vector2(self.matrixX(), self.matrixY() + self.path[-1].y)
+
+            self.path.pop()
+
+        if self.matrixX() < 0:
+            self.matrixPosition = vec.Vector2(27, self.matrixY())
+        elif self.matrixX() > 27:
+            self.matrixPosition = vec.Vector2(0, self.matrixY())
+
+    def getPath(self):
         pass
+
+    def update(self):
+        time = GameManager().return_time()
+
+        self.movAnimator.updateRectangles()
+        if time % self.timePath == 0:
+            self.getPath()
+
+        if time % self.timeMove == 0:
+            self.move()
+            self.elapsedDist = 0
+
+class RedGhost(Ghost):
+    def __init__(self):
+        super().__init__()
+        self.gName = "Red"
+
+    def getPath(self):
+        self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+
+class PinkGhost(Ghost):
+    def __init__(self):
+        super().__init__()
+        self.gName = "Pink"
+        self.timePath = 30
+
+    # 28 30
+    def getPath(self):
+        Pos=GameManager().getPlayerPos()
+
+        if(GameManager().getPlayerDirection()==Turn.RIGHT):
+            if Pos.x <= 22:
+                for i in range(1, 5, -1):
+                    if not GameManager().ReturnObject(Pos.x + i, Pos.y):
+                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x + i, Pos.y))
+                        return
+            self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+
+        if (GameManager().getPlayerDirection() == Turn.LEFT):
+            if Pos.x >= 5:
+                for i in range(1, 5, -1):
+                    if not GameManager().ReturnObject(Pos.x - i, Pos.y):
+                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x - i, Pos.y))
+                        return
+            self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+
+        if (GameManager().getPlayerDirection() == Turn.UP):
+            if Pos.y >= 5:
+                for i in range(1, 5, -1):
+                    if not GameManager().ReturnObject(Pos.x , Pos.y - i):
+                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x, Pos.y - i))
+                        return
+            self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
+
+        if (GameManager().getPlayerDirection() == Turn.DOWN):
+            if Pos.y <= 25:
+                for i in range(1, 5, -1):
+                    if not GameManager().ReturnObject(Pos.x, Pos.y + i):
+                        self.path = GameManager().findShortestPath(self.matrixPosition, vec.Vector2(Pos.x, Pos.y + i))
+                        return
+            self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
 
 class Food(GameObject, ITextureableObject):
     def __init__(self):
