@@ -239,7 +239,7 @@ class Player(GameObject, ITextureableObject):
             if len(self.animator.animations) == 4:
                 if self.lives == 0:
                     AppCore.Managers.AppManager.instance.SwitchState('menu')
-                    AppCore.Managers.AppManager.instance.GUIManager.reInit("you lost!")
+                    AppCore.Managers.AppManager.instance.GUIManager.reInit("you lost!", AppCore.Managers.AppManager.instance.GameManager.score)
                 else:
                     self.isActive = True
                     self.reset()

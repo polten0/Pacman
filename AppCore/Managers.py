@@ -163,6 +163,7 @@ class GameManager:
         self.lives_text = Label(10, 900, "LIVES:")
         self.lives_label = Label(220, 900, str(self.Pacman.lives))
         self.boosted_text = Label(430, 900, "boosted!")
+        self.boosted_time = Label(600, 850, 0)
 
         self.ghosts = []
 
@@ -185,6 +186,7 @@ class GameManager:
         self.lives_text.loadFont()
         self.lives_label.loadFont()
         self.boosted_text.loadFont()
+        self.boosted_time.loadFont()
         for ghost in self.ghosts:
             ghost.loadContent()
 
@@ -199,6 +201,7 @@ class GameManager:
         self.Pacman.draw()
         if (self.Pacman.isBoosted):
             self.boosted_text.draw()
+            self.boosted_time.draw()
 
 
     def CheckAllFood(self):
@@ -210,7 +213,7 @@ class GameManager:
                         j = False
         if (j):
             AppManager.instance.SwitchState("menu")
-            AppManager.instance.GUIManager.reInit("you won!")
+            AppManager.instance.GUIManager.reInit("you won!", self.score)
 
     def disableAllGhosts(self):
         for i in self.ghosts:
@@ -250,7 +253,8 @@ class GameManager:
                         self.Pacman.Death()
                         self.disableAllGhosts()
                         self.resetGhosts()
-
+        if (self.Pacman.isBoosted):
+            self.boosted_time.update(str(self.return_boost_time()))
         self.score_label.update(str(self.score))
         self.lives_label.update(str(self.Pacman.lives))
         self.CheckAllFood()
@@ -441,39 +445,41 @@ class GameManager:
     def return_time(self):
         return self.t
 
+    def return_boost_time(self):
+        if(self.Pacman.isBoosted):
+            return (self.Pacman.timeBoost - self.Pacman.t % self.Pacman.timeBoost) // 10
+
 class GUIManager:
     def __init__(self, welcome_text="welcome to pac-man!"):
         self.instance = self
         self.welcoming_label = Label(70, 20, welcome_text)
         self.play_button = Button(274, 375, "play", False)
         self.quit_button = Button(274, 475)
-        self.score_label = Label(318, 800, '0')
-
-        if welcome_text == "you lost!":
-            self.welcoming_label = Label(220, 20, welcome_text)
-
-        if welcome_text == "you won!":
-            self.welcoming_label = Label(220, 2, welcome_text)
-
+        self.score_label = Label(70, 900, None)
 
     def LoadContent(self):
         self.welcoming_label.loadFont()
         self.play_button.Label.loadFont()
         self.quit_button.Label.loadFont()
+        self.score_label.loadFont()
 
     def Update(self):
         self.play_button.update()
         self.quit_button.update()
 
-    def reInit(self, new_text):
+    def reInit(self, new_text, score):
         if new_text == "you lost!":
             self.welcoming_label = Label(220, 20, new_text)
 
         if new_text == "you won!":
             self.welcoming_label = Label(220, 20, new_text)
 
+        self.score_label = Label(70, 900, f"your score was {score}")
+
         self.LoadContent()
     def Draw(self):
         self.welcoming_label.draw()
         self.play_button.draw()
         self.quit_button.draw()
+        if (self.score_label.Text != None):
+            self.score_label.draw()
