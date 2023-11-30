@@ -225,11 +225,13 @@ class GameManager:
 
     def FrightAllGhosts(self):
         for i in self.ghosts:
-            i.Frightened = True
+            if not (i.Timeout):
+                i.Frightened = True
 
     def deFrightAllGhosts(self):
         for i in self.ghosts:
-            i.Frightened = False
+            if not (i.Timeout):
+                i.Frightened = False
 
     def resetGhosts(self):
         for ghost in self.ghosts:

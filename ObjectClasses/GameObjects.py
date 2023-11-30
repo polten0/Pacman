@@ -396,8 +396,6 @@ class Ghost(GameObject, ITextureableObject):
                 if time % self.timeMove == 0:
                     self.move()
                     self.elapsedDist = 0
-                if time // self.timeFear == 0:
-                    GameManager().deFrightAllGhosts()
 
 
 class RedGhost(Ghost):
