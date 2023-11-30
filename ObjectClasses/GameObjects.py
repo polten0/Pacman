@@ -332,6 +332,7 @@ class Ghost(GameObject, ITextureableObject):
     def Death(self):
         self.Frightened = False
         self.Timeout = True
+        self.path = None
         self.reset()
 
     def move(self):
@@ -379,6 +380,7 @@ class Ghost(GameObject, ITextureableObject):
                     self.spawn()
                 self.t += 1
 
+
 class RedGhost(Ghost):
     def __init__(self):
         super().__init__()
@@ -390,7 +392,7 @@ class RedGhost(Ghost):
 
     def getPath(self):
         self.path = GameManager().findShortestPath(self.matrixPosition, GameManager().getPlayerPos())
-
+        print(len(self.path))
         super().getPath()
 
 class PinkGhost(Ghost):
@@ -454,6 +456,7 @@ class Food(GameObject, ITextureableObject):
         if self.active:
             GameManager().addScore(self)
             self.active = False
+
 
     def draw(self):
         if self.active:
